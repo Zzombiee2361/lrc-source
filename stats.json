@@ -1,0 +1,30 @@
+{
+  "errors": [
+    "Entry module not found: Error: Can't resolve './src' in '/home/daffa/PROJECTS/Web/lrc-source'\nresolve './src' in '/home/daffa/PROJECTS/Web/lrc-source'\n  using description file: /home/daffa/PROJECTS/Web/lrc-source/package.json (relative path: .)\n    Field 'browser' doesn't contain a valid alias configuration\n    using description file: /home/daffa/PROJECTS/Web/lrc-source/package.json (relative path: ./src)\n      no extension\n        Field 'browser' doesn't contain a valid alias configuration\n        /home/daffa/PROJECTS/Web/lrc-source/src doesn't exist\n      .wasm\n        Field 'browser' doesn't contain a valid alias configuration\n        /home/daffa/PROJECTS/Web/lrc-source/src.wasm doesn't exist\n      .mjs\n        Field 'browser' doesn't contain a valid alias configuration\n        /home/daffa/PROJECTS/Web/lrc-source/src.mjs doesn't exist\n      .js\n        Field 'browser' doesn't contain a valid alias configuration\n        /home/daffa/PROJECTS/Web/lrc-source/src.js doesn't exist\n      .json\n        Field 'browser' doesn't contain a valid alias configuration\n        /home/daffa/PROJECTS/Web/lrc-source/src.json doesn't exist\n      as directory\n        /home/daffa/PROJECTS/Web/lrc-source/src doesn't exist"
+  ],
+  "warnings": [
+    "configuration\nThe 'mode' option has not been set, webpack will fallback to 'production' for this value. Set 'mode' option to 'development' or 'production' to enable defaults for each environment.\nYou can also set it to 'none' to disable any default behavior. Learn more: https://webpack.js.org/configuration/mode/"
+  ],
+  "version": "4.41.2",
+  "hash": "b5e16a85a64481033695",
+  "time": 350,
+  "builtAt": 1571557572103,
+  "publicPath": "",
+  "outputPath": "/home/daffa/PROJECTS/Web/lrc-source/dist",
+  "assetsByChunkName": {},
+  "assets": [],
+  "filteredAssets": 0,
+  "entrypoints": {},
+  "namedChunkGroups": {},
+  "chunks": [],
+  "modules": [],
+  "filteredModules": 0,
+  "logging": {
+    "webpack.buildChunkGraph.visitModules": {
+      "entries": [],
+      "filteredEntries": 1,
+      "debug": false
+    }
+  },
+  "children": []
+}
