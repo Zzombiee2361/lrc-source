@@ -22,7 +22,6 @@ class Search extends Component {
 		super(props);
 
 		this.state = {
-			prevQuery: this.props.location.search,
 			query: this.props.location.search,
 			searched: false,
 			result: [],
@@ -46,31 +45,24 @@ class Search extends Component {
 		.then((response) => {
 			const result = this.filterResult(response.data.recordings);
 			this.setState({
+				searched: true,
 				result: result,
 				details: {
 					count: response.data.count,
 					offset: response.data.offset,
-					prevQuery: this.state.query,
 				}
 			});
 		})
 		.catch((error) => {
-			this.setState({ result: [] });
-			console.log(error);
-		})
-		.finally(() => {
 			this.setState({ searched: true });
+			console.log(error);
 		});
-	}
-
-	componentDidMount() {
-		this.search();
 	}
 
 	static getDerivedStateFromProps(nextProps, prevState) {
 		if(nextProps.location.search !== prevState.query) {
 			return {
-				prevQuery: prevState.query,
+				searched: false,
 				query: nextProps.location.search
 			};
 		}
@@ -85,7 +77,7 @@ class Search extends Component {
 			releases.forEach((release) => {
 				const album = release['release-group'];
 				const notThese = ['Compilation', 'DJ-mix'];
-				const filtered = !(album['secondary-types'] && album['secondary-types'].some((r) => notThese.includes(r)));
+				const filtered = !(Array.isArray(album['secondary-types']) && album['secondary-types'].some((r) => notThese.includes(r)));
 				if(filtered) {
 					const i = results.length;
 					this.fetchCover(release.id, i);
@@ -143,9 +135,9 @@ class Search extends Component {
 				</Grid>
 			);
 		}
-		console.log(result);
+
 		return result.map((item, i) => {
-			const artist = item.recording['artist-credit'].reduce((prev, artist) => {
+			const artist = item['artist-credit'].reduce((prev, artist) => {
 				return prev + artist.name + (artist.joinphrase ? artist.joinphrase : '');
 			}, '');
 			return (
@@ -181,15 +173,28 @@ class Search extends Component {
 		});
 	}
 	
+	componentDidUpdate(prevProps, prevState) {
+		Object.entries(this.props).forEach(([key, val]) =>
+			prevProps[key] !== val && console.log(`Prop '${key}' changed`, prevProps[key], val)
+		);
+		if (this.state) {
+			Object.entries(this.state).forEach(([key, val]) =>
+				prevState[key] !== val && console.log(`State '${key}' changed`, prevState[key], val)
+			);
+		}
+	}
+
 	render() {
 		const resultList = (this.state.searched
 			? this.renderResult(this.state.result)
 			: (<Typography variant="h6" color="textSecondary">Searching...</Typography>));
 
-		// if(this.state.prevQuery !== this.state.query) {
-		// 	this.search();
-		// }
-		
+		if(this.state.searched === false) {
+			this.search();
+		}
+
+		console.log('rendering');
+
 		return (
 			<Container maxWidth="md">
 				<Typography variant="h2" gutterBottom>Search result</Typography>
