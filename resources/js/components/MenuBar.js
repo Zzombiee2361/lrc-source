@@ -54,7 +54,6 @@ class MenuBar extends Component {
 			'recording:'+this.state.searchTitle,
 			'artist:'+this.state.searchArtist
 		];
-		console.log(data.join(' AND '));
 		this.props.history.push('/search?query='+data.join(' AND '));
 	}
 
