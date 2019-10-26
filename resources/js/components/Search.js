@@ -12,11 +12,11 @@ import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Typography from '@material-ui/core/Typography';
 
-const useStyles = theme => ({
+const useStyles = {
 	image: {
 		height: '100%'
 	}
-});
+};
 class Search extends Component {
 	constructor(props) {
 		super(props);
@@ -109,13 +109,6 @@ class Search extends Component {
 				this.setState({
 					result: update(this.state.result, { [i]: { cover: { $set: cover } } })
 				});
-				// this.setState(prevState => ({
-				// 	result: prevState.result.map((obj) => (
-				// 		obj.id === id
-				// 		? Object.assign(obj, { cover: cover })
-				// 		: obj
-				// 	))
-				// }));
 			})
 			.catch(() => {
 				const cover = 'https://via.placeholder.com/150x150?text=No+Cover';

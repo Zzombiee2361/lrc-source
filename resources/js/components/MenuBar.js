@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { withRouter } from 'react-router-dom';
-
+import { withRouter, Link } from 'react-router-dom';
 
 import  { fade, withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -20,6 +19,10 @@ const useStyles = theme => ({
 	},
 	menuButton: {
 		marginRight: theme.spacing(2)
+	},
+	menuTitle: {
+		textDecoration: 'none',
+		color: 'white',
 	},
 	search: {
 		borderRadius: theme.shape.borderRadius,
@@ -62,10 +65,16 @@ class MenuBar extends Component {
 		return (
 			<AppBar position="static">
 				<Toolbar>
-					<IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
+					<IconButton
+						edge="start"
+						className={classes.menuButton}
+						color="inherit"
+						aria-label="menu"
+						onClick={this.props.toggleSidebar}
+					>
 						<MenuIcon />
 					</IconButton>
-					<Typography variant="h5" className={classes.grow}>
+					<Typography variant="h5" className={`${classes.grow} ${classes.menuTitle}`} component={Link} to="/">
 						LRC Source
 					</Typography>
 					<InputBase
@@ -104,7 +113,8 @@ class MenuBar extends Component {
 
 MenuBar.propTypes = {
 	classes: PropTypes.object,
-	history: PropTypes.object.isRequired
+	history: PropTypes.object.isRequired,
+	toggleSidebar: PropTypes.func.isRequired,
 };
 
 export default withRouter(withStyles(useStyles)(MenuBar));
