@@ -90,6 +90,18 @@ export default function SignUp() {
 							/>
 						</Grid>
 						<Grid item xs={12}>
+							<TextField
+								variant="outlined"
+								required
+								fullWidth
+								name="password_confirmation"
+								label="Confirm Password"
+								type="password"
+								id="password_confirmation"
+								autoComplete="current-password"
+							/>
+						</Grid>
+						<Grid item xs={12}>
 							<FormControlLabel
 								control={<Checkbox value="allowExtraEmails" color="primary" />}
 								label="I'm not a robot"
