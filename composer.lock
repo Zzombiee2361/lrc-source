@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "efaaddf90e7c4ea139c42619f8a68aa1",
+    "content-hash": "21c8ab6766d6f7f641fc42133e26e895",
     "packages": [
         {
             "name": "defuse/php-encryption",
@@ -1314,64 +1314,6 @@
             "time": "2019-05-05T09:22:01+00:00"
         },
         {
-            "name": "mikealmond/musicbrainz",
-            "version": "v0.2.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/mikealmond/MusicBrainz.git",
-                "reference": "c5a6fe502bf8d2be4e269543a3536b759f7a50d4"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/mikealmond/MusicBrainz/zipball/c5a6fe502bf8d2be4e269543a3536b759f7a50d4",
-                "reference": "c5a6fe502bf8d2be4e269543a3536b759f7a50d4",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.8"
-            },
-            "require-dev": {
-                "guzzle/guzzle": "~3.8.0",
-                "phpunit/phpunit": "3.7.*"
-            },
-            "suggest": {
-                "guzzle/guzzle": "Allows you to use the GuzzleHttpAdapter. You must install one of the supported adapters.",
-                "rmccue/requests": "Allows you to use the RequestsHttpAdapter. You must install one of the supported adapters."
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "0.2.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "MusicBrainz": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Mike Almond",
-                    "email": "mike.almond@gmail.com",
-                    "homepage": "http://mikealmond.com",
-                    "role": "Developer"
-                }
-            ],
-            "description": "A PHP library for accessing the MusicBrainz API",
-            "homepage": "https://github.com/mikealmond/musicbrainz",
-            "keywords": [
-                "api",
-                "library",
-                "musicbrainz",
-                "php"
-            ],
-            "time": "2015-09-17T16:46:51+00:00"
-        },
-        {
             "name": "monolog/monolog",
             "version": "1.25.1",
             "source": {
@@ -2256,55 +2198,6 @@
                 "uuid"
             ],
             "time": "2018-07-19T23:38:55+00:00"
-        },
-        {
-            "name": "rmccue/requests",
-            "version": "v1.7.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/rmccue/Requests.git",
-                "reference": "87932f52ffad70504d93f04f15690cf16a089546"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/rmccue/Requests/zipball/87932f52ffad70504d93f04f15690cf16a089546",
-                "reference": "87932f52ffad70504d93f04f15690cf16a089546",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.2"
-            },
-            "require-dev": {
-                "requests/test-server": "dev-master"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "Requests": "library/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "ISC"
-            ],
-            "authors": [
-                {
-                    "name": "Ryan McCue",
-                    "homepage": "http://ryanmccue.info"
-                }
-            ],
-            "description": "A HTTP library written in PHP, for human beings.",
-            "homepage": "http://github.com/rmccue/Requests",
-            "keywords": [
-                "curl",
-                "fsockopen",
-                "http",
-                "idna",
-                "ipv6",
-                "iri",
-                "sockets"
-            ],
-            "time": "2016-10-13T00:11:37+00:00"
         },
         {
             "name": "swiftmailer/swiftmailer",

@@ -3,9 +3,16 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Requests;
+use GuzzleHttp\Client;
 
 class MusicBrainzController extends Controller {
+	private $client;
+	public function __construct() {
+		$this->client = new Client([
+			'base_uri' => 'https://musicbrainz.org/ws/2/'
+		]);
+	}
+
 	public function search(Request $request){
 		$validatedData = $request->validate([
 			'query' => 'required',
@@ -21,7 +28,9 @@ class MusicBrainzController extends Controller {
 			'User-Agent' => 'lrc-source/0.0.1 ( daffamumtaz2001@gmail.com )'
 		];
 
-		$request = Requests::get('https://musicbrainz.org/ws/2/recording?' . $params, $headers);
-		echo $request->body;
+		$response = $this->client->get('recording?' . $params, [
+			'headers' => $headers
+		]);
+		echo $response->getBody();
 	}
 }
