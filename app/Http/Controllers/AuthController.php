@@ -20,7 +20,7 @@ class AuthController extends Controller
 			'name' => $request->name,
 			'email' => $request->email,
 			'password' => bcrypt($request->password),
-			'role' => 'Unverified',
+			'role' => '1',
 		]);
 
 		$user->save();
