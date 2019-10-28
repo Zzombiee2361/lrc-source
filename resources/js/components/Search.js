@@ -130,7 +130,8 @@ class Search extends Component {
 		}
 
 		return result.map((item, i) => {
-			const artist = item['artist-credit'].reduce((prev, artist) => {
+			const listArtist = (item['artist-credit'] || item.recording["artist-credit"] || []);
+			const artist = listArtist.reduce((prev, artist) => {
 				return prev + artist.name + (artist.joinphrase ? artist.joinphrase : '');
 			}, '');
 			return (
