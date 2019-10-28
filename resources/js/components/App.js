@@ -7,8 +7,8 @@ import SidebarDrawer from './SidebarDrawer';
 import HomePage from './HomePage';
 
 import Search from './Search';
-import Login from './users/Login.js';
-import Register from './users/Register.js';
+import Login from './auth/Login.js';
+import Register from './auth/Register.js';
 
 export default class App extends Component {
 	constructor(props) {
