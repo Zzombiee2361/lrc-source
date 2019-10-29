@@ -1,7 +1,10 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { Component } from 'react';
+import update from 'immutability-helper';
+import PropTypes from 'prop-types';
+import { withRouter, Link } from 'react-router-dom';
+import axios from 'axios';
 
-import { makeStyles } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -14,7 +17,7 @@ import Container from '@material-ui/core/Container';
 
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = theme => ({
 	'@global': {
 		body: {
 			backgroundColor: theme.palette.common.white,
@@ -37,71 +40,83 @@ const useStyles = makeStyles(theme => ({
 	submit: {
 		margin: theme.spacing(3, 0, 2),
 	},
-}));
+});
 
-export default function SignIn() {
-	const classes = useStyles();
-
-	return (
-		<Container component="main" maxWidth="xs">
-			<CssBaseline />
-			<div className={classes.paper}>
-				<Avatar className={classes.avatar}>
-					<LockOutlinedIcon />
-				</Avatar>
-				<Typography component="h1" variant="h5">
-					Log in
-				</Typography>
-				<form className={classes.form} noValidate>
-					<TextField
-						variant="outlined"
-						margin="normal"
-						required
-						fullWidth
-						id="email"
-						label="Email Address"
-						name="email"
-						autoComplete="email"
-						autoFocus
-					/>
-					<TextField
-						variant="outlined"
-						margin="normal"
-						required
-						fullWidth
-						name="password"
-						label="Password"
-						type="password"
-						id="password"
-						autoComplete="current-password"
-					/>
-					<FormControlLabel
-						control={<Checkbox value="remember" color="primary" />}
-						label="Remember me"
-					/>
-					<Button
-						type="submit"
-						fullWidth
-						variant="contained"
-						color="primary"
-						className={classes.submit}
-					>
-						Login
-					</Button>
-					<Grid container>
-						<Grid item xs>
-							<Link to="#">
-								Forgot password?
-							</Link>
+class Login extends Component {
+	constructor(props){
+		super(props);
+	}
+	
+	render(){
+		const { classes } = this.props;
+		return (
+			<Container component="main" maxWidth="xs">
+				<CssBaseline />
+				<div className={classes.paper}>
+					<Avatar className={classes.avatar}>
+						<LockOutlinedIcon />
+					</Avatar>
+					<Typography component="h1" variant="h5">
+						Log in
+					</Typography>
+					<form className={classes.form} noValidate>
+						<TextField
+							variant="outlined"
+							margin="normal"
+							required
+							fullWidth
+							id="email"
+							label="Email Address"
+							name="email"
+							autoComplete="email"
+							autoFocus
+						/>
+						<TextField
+							variant="outlined"
+							margin="normal"
+							required
+							fullWidth
+							name="password"
+							label="Password"
+							type="password"
+							id="password"
+							autoComplete="current-password"
+						/>
+						<FormControlLabel
+							control={<Checkbox value="remember" color="primary" />}
+							label="Remember me"
+						/>
+						<Button
+							type="submit"
+							fullWidth
+							variant="contained"
+							color="primary"
+							className={classes.submit}
+						>
+							Login
+						</Button>
+						<Grid container>
+							<Grid item xs>
+								<Link to="#">
+									Forgot password?
+								</Link>
+							</Grid>
+							<Grid item>
+								<Link to="/register">
+									{"Don't have an account? Register"}
+								</Link>
+							</Grid>
 						</Grid>
-						<Grid item>
-							<Link to="/register">
-								{"Don't have an account? Register"}
-							</Link>
-						</Grid>
-					</Grid>
-				</form>
-			</div>
-		</Container>
-	);
+					</form>
+				</div>
+			</Container>
+		);
+	}
 }
+
+Login.propTypes = {
+	classes: PropTypes.object,
+	history: PropTypes.object.isRequired,
+}
+
+export default withRouter(withStyles(useStyles)(Login));
