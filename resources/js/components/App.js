@@ -20,6 +20,8 @@ export default class App extends Component {
 		this.toggleSidebar = this.toggleSidebar.bind(this);
 	}
 
+	// TODO: implement auth change to be called from Login.js then update SidebarDrawer.js
+	
 	toggleSidebar(event) {
 		if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
 			return;

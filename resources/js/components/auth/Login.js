@@ -9,13 +9,16 @@ import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
+// import FormControlLabel from '@material-ui/core/FormControlLabel';
+// import Checkbox from '@material-ui/core/Checkbox';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
+import Snackbar from '@material-ui/core/Snackbar';
+import IconButton from '@material-ui/core/IconButton';
 
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import CloseIcon from '@material-ui/icons/Close';
 
 const useStyles = theme => ({
 	'@global': {
@@ -45,8 +48,78 @@ const useStyles = theme => ({
 class Login extends Component {
 	constructor(props){
 		super(props);
+		this.state = {
+			inputs: {},
+			errors: {
+				name: '',
+				email: '',
+				password: '',
+				password_confirmation: '',
+			},
+			snackbar: {
+				open: false,
+				message: '',
+			}
+		}
+
+		this.openSnackbar = this.openSnackbar.bind(this);
+		this.closeSnackbar = this.closeSnackbar.bind(this);
+		this.handleInputChange = this.handleInputChange.bind(this);
+		this.handleSubmit = this.handleSubmit.bind(this);
+	}
+
+	openSnackbar(message) {
+		this.setState({
+			snackbar: {
+				open: true,
+				message: message,
+			}
+		});
 	}
 	
+	closeSnackbar() {
+		this.setState({
+			snackbar: {
+				open: false,
+				message: '',
+			}
+		});
+	}
+
+	handleInputChange(event) {
+		this.setState(update(this.state, {
+			inputs: {
+				[event.target.name]: { $set: event.target.value }
+			},
+			errors: {
+				[event.target.name]: { $set: '' }
+			}
+		}));
+	}
+
+	handleSubmit(event) {
+		event.preventDefault();
+		axios.post('/api/auth/login', this.state.inputs)
+			.then((response) => {
+				if(response.status === 200) {
+					localStorage.setItem('token', JSON.stringify(response.data));
+					this.props.history.push('/');
+				} else {
+					this.openSnackbar(response.data.message);
+				}
+			})
+			.catch((error) => {
+				console.log(error.response);
+				const data = error.response.data;
+				if(typeof data.errors === 'object') {
+					this.setState({
+						errors: update(this.state.errors, { $merge: data.errors })
+					})
+				}
+				this.openSnackbar(data.message);
+			});
+	}
+
 	render(){
 		const { classes } = this.props;
 		return (
@@ -70,6 +143,9 @@ class Login extends Component {
 							name="email"
 							autoComplete="email"
 							autoFocus
+							onChange={this.handleInputChange}
+							error={this.state.errors.email !== ''}
+							helperText={this.state.errors.email}
 						/>
 						<TextField
 							variant="outlined"
@@ -81,11 +157,14 @@ class Login extends Component {
 							type="password"
 							id="password"
 							autoComplete="current-password"
+							onChange={this.handleInputChange}
+							error={this.state.errors.password !== ''}
+							helperText={this.state.errors.password}
 						/>
-						<FormControlLabel
+						{/* <FormControlLabel
 							control={<Checkbox value="remember" color="primary" />}
 							label="Remember me"
-						/>
+						/> */}
 						<Button
 							type="submit"
 							fullWidth
@@ -109,6 +188,26 @@ class Login extends Component {
 						</Grid>
 					</form>
 				</div>
+				<Snackbar
+					anchorOrigin={{
+						vertical: 'top',
+						horizontal: 'right',
+					}}
+					open={this.state.snackbar.open}
+					autoHideDuration={6000}
+					onClose={this.closeSnackbar}
+					message={this.state.snackbar.message}
+					action={[
+						<IconButton
+							key="close"
+							aria-label="close"
+							color="inherit"
+							onClick={this.closeSnackbar}
+						>
+							<CloseIcon />
+						</IconButton>
+					]}
+				/>
 			</Container>
 		);
 	}

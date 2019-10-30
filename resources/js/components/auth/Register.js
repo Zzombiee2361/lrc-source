@@ -118,7 +118,7 @@ class Register extends Component {
 				this.openSnackbar(data.message);
 			});
 	}
-	
+
 	render() {
 		const { classes } = this.props;
 		return (
@@ -230,6 +230,7 @@ class Register extends Component {
 						<IconButton
 							key="close"
 							aria-label="close"
+							color="inherit"
 							onClick={this.closeSnackbar}
 						>
 							<CloseIcon />

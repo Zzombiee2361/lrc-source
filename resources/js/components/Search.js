@@ -167,16 +167,17 @@ class Search extends Component {
 		});
 	}
 	
-	componentDidUpdate(prevProps, prevState) {
-		Object.entries(this.props).forEach(([key, val]) =>
-			prevProps[key] !== val && console.log(`Prop '${key}' changed`, prevProps[key], val)
-		);
-		if (this.state) {
-			Object.entries(this.state).forEach(([key, val]) =>
-				prevState[key] !== val && console.log(`State '${key}' changed`, prevState[key], val)
-			);
-		}
-	}
+	// Debugging info
+	// componentDidUpdate(prevProps, prevState) {
+	// 	Object.entries(this.props).forEach(([key, val]) =>
+	// 		prevProps[key] !== val && console.log(`Prop '${key}' changed`, prevProps[key], val)
+	// 	);
+	// 	if (this.state) {
+	// 		Object.entries(this.state).forEach(([key, val]) =>
+	// 			prevState[key] !== val && console.log(`State '${key}' changed`, prevState[key], val)
+	// 		);
+	// 	}
+	// }
 
 	render() {
 		const resultList = (this.state.searched
