@@ -95,7 +95,10 @@ class Search extends Component {
 		let cover;
 
 		const requestedWith = axios.defaults.headers.common['X-Requested-With'];
+		const authorization = axios.defaults.headers.common['Authorization'];
 		delete axios.defaults.headers.common['X-Requested-With'];
+		delete axios.defaults.headers.common['Authorization'];
+
 		axios.get('http://coverartarchive.org/release/' + id)
 			.then((response) => {
 				const images = response.data.images;
@@ -116,7 +119,9 @@ class Search extends Component {
 					result: update(this.state.result, { [i]: { cover: { $set: cover } } })
 				});
 			});
+
 		axios.defaults.headers.common['X-Requested-With'] = requestedWith;
+		axios.defaults.headers.common['Authorization'] = authorization;
 	}
 
 	renderResult(result) {
@@ -187,8 +192,6 @@ class Search extends Component {
 		if(this.state.searched === false) {
 			this.search();
 		}
-
-		console.log('rendering');
 
 		return (
 			<Container maxWidth="md">

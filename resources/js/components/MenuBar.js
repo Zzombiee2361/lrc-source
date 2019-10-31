@@ -52,7 +52,8 @@ class MenuBar extends Component {
 		});
 	}
 
-	handleSearch() {
+	handleSearch(event) {
+		event.preventDefault();
 		const data = [
 			'recording:'+this.state.searchTitle,
 			'artist:'+this.state.searchArtist
@@ -77,34 +78,36 @@ class MenuBar extends Component {
 					<Typography variant="h5" className={`${classes.grow} ${classes.menuTitle}`} component={Link} to="/">
 						LRC Source
 					</Typography>
-					<InputBase
-						placeholder="Title"
-						classes={{
-							root: classes.search,
-							input: classes.searchInput
-						}}
-						name="searchTitle"
-						inputProps={{ 'aria-label': 'search title' }}
-						onChange={this.handleSearchField}
-					/>
-					<InputBase
-						placeholder="Artist"
-						classes={{
-							root: classes.search,
-							input: classes.searchInput
-						}}
-						name="searchArtist"
-						inputProps={{ 'aria-label': 'search artist' }}
-						onChange={this.handleSearchField}
-					/>
-					<Button
-						variant="contained"
-						color="secondary"
-						startIcon={<SearchIcon />}
-						onClick={this.handleSearch}
-					>
-						Search
-					</Button>
+					<form onSubmit={this.handleSearch}>
+						<InputBase
+							placeholder="Title"
+							classes={{
+								root: classes.search,
+								input: classes.searchInput
+							}}
+							name="searchTitle"
+							inputProps={{ 'aria-label': 'search title' }}
+							onChange={this.handleSearchField}
+						/>
+						<InputBase
+							placeholder="Artist"
+							classes={{
+								root: classes.search,
+								input: classes.searchInput
+							}}
+							name="searchArtist"
+							inputProps={{ 'aria-label': 'search artist' }}
+							onChange={this.handleSearchField}
+						/>
+						<Button
+							type="submit"
+							variant="contained"
+							color="secondary"
+							startIcon={<SearchIcon />}
+						>
+							Search
+						</Button>
+					</form>
 				</Toolbar>
 			</AppBar>
 		);

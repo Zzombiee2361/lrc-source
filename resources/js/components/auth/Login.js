@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import update from 'immutability-helper';
 import PropTypes from 'prop-types';
 import { withRouter, Link } from 'react-router-dom';
-import axios from 'axios';
 
 import { withStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
@@ -76,7 +75,7 @@ class Login extends Component {
 			}
 		});
 	}
-	
+
 	closeSnackbar() {
 		this.setState({
 			snackbar: {
@@ -99,24 +98,26 @@ class Login extends Component {
 
 	handleSubmit(event) {
 		event.preventDefault();
-		axios.post('/api/auth/login', this.state.inputs)
+		this.props.authenticate(this.state.inputs.email, this.state.inputs.password)
 			.then((response) => {
 				if(response.status === 200) {
-					localStorage.setItem('token', JSON.stringify(response.data));
 					this.props.history.push('/');
 				} else {
 					this.openSnackbar(response.data.message);
 				}
 			})
 			.catch((error) => {
-				console.log(error.response);
-				const data = error.response.data;
-				if(typeof data.errors === 'object') {
-					this.setState({
-						errors: update(this.state.errors, { $merge: data.errors })
-					})
+				if(typeof error.response === 'object' && typeof error.response.data === 'object') {
+					const data = error.response.data;
+					if(typeof data.errors === 'object') {
+						this.setState({
+							errors: update(this.state.errors, { $merge: data.errors })
+						})
+					}
+					this.openSnackbar(data.message);
+				} else {
+					this.openSnackbar('Login failed');
 				}
-				this.openSnackbar(data.message);
 			});
 	}
 
@@ -132,7 +133,7 @@ class Login extends Component {
 					<Typography component="h1" variant="h5">
 						Log in
 					</Typography>
-					<form className={classes.form} noValidate>
+					<form className={classes.form} noValidate onSubmit={this.handleSubmit}>
 						<TextField
 							variant="outlined"
 							margin="normal"
@@ -216,6 +217,7 @@ class Login extends Component {
 Login.propTypes = {
 	classes: PropTypes.object,
 	history: PropTypes.object.isRequired,
+	authenticate: PropTypes.func,
 }
 
 export default withRouter(withStyles(useStyles)(Login));

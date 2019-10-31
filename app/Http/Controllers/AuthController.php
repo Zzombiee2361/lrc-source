@@ -51,7 +51,8 @@ class AuthController extends Controller
 		return response()->json([
 			'access_token' => $tokenResult->accessToken,
 			'token_type' => 'Bearer',
-			'expires_at' => now()->addDays(15)->toDateTimeString()
+			'expires_at' => now()->addDays(15)->toDateTimeString(),
+			'user' => $user
 		]);
 	}
 
