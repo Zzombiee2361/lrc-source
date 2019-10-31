@@ -13,11 +13,8 @@ import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
-import Snackbar from '@material-ui/core/Snackbar';
-import IconButton from '@material-ui/core/IconButton';
 
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import CloseIcon from '@material-ui/icons/Close';
 
 const useStyles = theme => ({
 	'@global': {
@@ -54,35 +51,13 @@ class Login extends Component {
 				email: '',
 				password: '',
 				password_confirmation: '',
-			},
-			snackbar: {
-				open: false,
-				message: '',
 			}
 		}
 
-		this.openSnackbar = this.openSnackbar.bind(this);
-		this.closeSnackbar = this.closeSnackbar.bind(this);
+		this.notify = this.props.notify;
+
 		this.handleInputChange = this.handleInputChange.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
-	}
-
-	openSnackbar(message) {
-		this.setState({
-			snackbar: {
-				open: true,
-				message: message,
-			}
-		});
-	}
-
-	closeSnackbar() {
-		this.setState({
-			snackbar: {
-				open: false,
-				message: '',
-			}
-		});
 	}
 
 	handleInputChange(event) {
@@ -101,9 +76,10 @@ class Login extends Component {
 		this.props.authenticate(this.state.inputs.email, this.state.inputs.password)
 			.then((response) => {
 				if(response.status === 200) {
+					this.notify.show('Logged in!');
 					this.props.history.push('/');
 				} else {
-					this.openSnackbar(response.data.message);
+					this.notify.show(response.data.message);
 				}
 			})
 			.catch((error) => {
@@ -114,9 +90,9 @@ class Login extends Component {
 							errors: update(this.state.errors, { $merge: data.errors })
 						})
 					}
-					this.openSnackbar(data.message);
+					this.notify.show(data.message);
 				} else {
-					this.openSnackbar('Login failed');
+					this.notify.show('Login failed');
 				}
 			});
 	}
@@ -189,35 +165,16 @@ class Login extends Component {
 						</Grid>
 					</form>
 				</div>
-				<Snackbar
-					anchorOrigin={{
-						vertical: 'top',
-						horizontal: 'right',
-					}}
-					open={this.state.snackbar.open}
-					autoHideDuration={6000}
-					onClose={this.closeSnackbar}
-					message={this.state.snackbar.message}
-					action={[
-						<IconButton
-							key="close"
-							aria-label="close"
-							color="inherit"
-							onClick={this.closeSnackbar}
-						>
-							<CloseIcon />
-						</IconButton>
-					]}
-				/>
 			</Container>
 		);
 	}
 }
 
 Login.propTypes = {
-	classes: PropTypes.object,
+	classes: PropTypes.object.isRequired,
 	history: PropTypes.object.isRequired,
 	authenticate: PropTypes.func,
+	notify: PropTypes.object
 }
 
 export default withRouter(withStyles(useStyles)(Login));

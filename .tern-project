@@ -8,5 +8,6 @@
      "requirejs": {},
      "es_modules": {},
      "jasmine": {}
-  }
+  },
+  "dependencyBudget": 3000
 }

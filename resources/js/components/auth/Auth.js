@@ -8,10 +8,16 @@ class Auth {
 			this.parent.state.user = {
 				email: '',
 				name: '',
+				role: null,
 			};
 		} else {
 			const data = JSON.parse(this.auth);
-			this._setData(data, true);
+			const exp = new Date(data.expires_at);
+			if(exp > new Date()) {
+				this._setData(data, true);
+			} else {
+				this._clearData(true);
+			}
 		}
 
 		['_setData', '_clearData', 'authenticate', 'logout'].forEach((method) => {
@@ -26,6 +32,7 @@ class Auth {
 		const userData = {
 			email: data.user.email,
 			name: data.user.name,
+			role: data.user.role,
 		};
 		if(mutate) {
 			this.parent.state.user = userData
@@ -41,6 +48,7 @@ class Auth {
 		const userData = {
 			email: '',
 			name: '',
+			role: null
 		};
 		if(mutate) {
 			this.parent.state.user = userData
