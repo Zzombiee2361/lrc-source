@@ -32,6 +32,11 @@ Migrate database
 php artisan migrate
 ```
 
+Install Laravel Passport
+```
+php artisan passport:install
+```
+
 Run web server
 ```
 php artisan serve

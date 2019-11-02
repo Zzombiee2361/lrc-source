@@ -30,5 +30,10 @@ class AuthServiceProvider extends ServiceProvider
         Passport::personalAccessTokensExpireIn(now()->addDays(15));
         Passport::tokensExpireIn(now()->addDays(15));
         Passport::refreshTokensExpireIn(now()->addDays(30));
+
+        Passport::tokensCan([
+            'contribute' => 'Contribute lyric',
+            'approve' => 'Approve contributed lyric'
+        ]);
     }
 }
