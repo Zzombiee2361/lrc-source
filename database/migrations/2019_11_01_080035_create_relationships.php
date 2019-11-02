@@ -16,9 +16,9 @@ class CreateRelationships extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->foreign('role')->references('id')->on('user_roles');
         });
-        Schema::table('songs', function (Blueprint $table) {
-        	$table->foreign('id_lyric')->references('id')->on('lyrics');
-        });
+        // Schema::table('songs', function (Blueprint $table) {
+        // 	$table->foreign('id_lyric')->references('id')->on('lyrics');
+        // });
         Schema::table('lyrics', function (Blueprint $table) {
         	$table->foreign('id_song')->references('id')->on('songs');
         	$table->foreign('contributed_by')->references('id')->on('users');
@@ -36,9 +36,9 @@ class CreateRelationships extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->dropForeign(['role']);
         });
-        Schema::table('songs', function (Blueprint $table) {
-            $table->dropForeign(['id_lyric']);
-        });
+        // Schema::table('songs', function (Blueprint $table) {
+        //     $table->dropForeign(['id_lyric']);
+        // });
         Schema::table('lyrics', function (Blueprint $table) {
             $table->dropForeign(['id_song']);
             $table->dropForeign(['contributed_by']);
