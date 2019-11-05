@@ -18,7 +18,7 @@ class CreateLyricsTable extends Migration
             $table->char('id_song', 36);
             $table->unsignedSmallInteger('revision');
             $table->unsignedBigInteger('contributed_by');
-            $table->unsignedBigInteger('approved_by');
+            $table->unsignedBigInteger('approved_by')->nullable();
             $table->text('lyric');
             $table->timestamp('created_at')->useCurrent();
         });

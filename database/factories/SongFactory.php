@@ -7,10 +7,10 @@ use Faker\Generator as Faker;
 
 $factory->define(Song::class, function (Faker $faker) {
     return [
-        'id' => $faker->regexify('[\w\d]{8}-[\w\d]{4}-[\w\d]{4}-[\w\d]{4}-[\w\d]{12}'),
+        'id' => $faker->uuid,
         'name' => $faker->sentence(3),
         'artist' => $faker->name,
-        'album_id' => $faker->regexify('[\w\d]{8}-[\w\d]{4}-[\w\d]{4}-[\w\d]{4}-[\w\d]{12}'),
+        'album_id' => $faker->uuid,
         'album' => $faker->sentence(1),
         'view_count' => 0,
     ];
