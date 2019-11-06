@@ -12,11 +12,14 @@ import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Typography from '@material-ui/core/Typography';
 
+import Contribute from './Contribute';
+
 const useStyles = {
 	image: {
 		height: '100%'
 	}
 };
+
 class Search extends Component {
 	constructor(props) {
 		super(props);
@@ -28,13 +31,17 @@ class Search extends Component {
 			details: {
 				count: 0,
 				offset: 0
-			}
+			},
+			selected: null,
+			lyricOpen: false,
 		};
 
 		this.search = this.search.bind(this);
 		this.filterResult = this.filterResult.bind(this);
 		this.fetchCover = this.fetchCover.bind(this);
 		this.renderResult = this.renderResult.bind(this);
+		this.openLyricModal = this.openLyricModal.bind(this);
+		this.closeLyricModal = this.closeLyricModal.bind(this);
 	}
 
 	search() {
@@ -59,6 +66,7 @@ class Search extends Component {
 		});
 	}
 
+	// search on query change
 	static getDerivedStateFromProps(nextProps, prevState) {
 		if(nextProps.location.search !== prevState.query) {
 			return {
@@ -142,7 +150,10 @@ class Search extends Component {
 			return (
 				<Grid item md={6} sm={12} key={i}>
 					<Card>
-						<CardActionArea>
+						<CardActionArea
+							data-index={i}
+							onClick={this.openLyricModal}
+						>
 							<Grid container spacing={0}>
 								<Grid item xs={4}>
 									<CardMedia
@@ -171,6 +182,21 @@ class Search extends Component {
 			);
 		});
 	}
+
+	openLyricModal(event) {
+		const el = event.currentTarget;
+		const index = parseInt(el.getAttribute('data-index'));
+		this.setState({
+			lyricOpen: true,
+			selected: index
+		})
+	}
+
+	closeLyricModal() {
+		this.setState({
+			lyricOpen: false,
+		});
+	}
 	
 	// Debugging info
 	// componentDidUpdate(prevProps, prevState) {
@@ -193,13 +219,27 @@ class Search extends Component {
 			this.search();
 		}
 
+		const selectedItem = (
+			this.state.selected === null
+			? {}
+			: this.state.result[this.state.selected]
+		);
+
 		return (
-			<Container maxWidth="md">
-				<Typography variant="h2" gutterBottom>Search result</Typography>
-				<Grid container spacing={3}>
-					{resultList}
-				</Grid>
-			</Container>
+			<React.Fragment>
+				<Container maxWidth="md">
+					<Typography variant="h2" gutterBottom>Search result</Typography>
+					<Grid container spacing={3}>
+						{resultList}
+					</Grid>
+				</Container>
+				<Contribute
+					lyricOpen={this.state.lyricOpen}
+					item={selectedItem}
+					handleClose={this.closeLyricModal}
+					notify={this.props.notify}
+				/>
+			</React.Fragment>
 		)
 	}
 }
@@ -208,6 +248,7 @@ Search.propTypes = {
 	location: PropTypes.object.isRequired,
 	history: PropTypes.object.isRequired,
 	classes: PropTypes.object,
+	notify: PropTypes.object.isRequired,
 }
 
 export default withStyles(useStyles)(Search);

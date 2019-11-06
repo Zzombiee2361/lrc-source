@@ -10,7 +10,7 @@ $factory->define(Song::class, function (Faker $faker) {
         'id' => $faker->uuid,
         'name' => $faker->sentence(3),
         'artist' => $faker->name,
-        'album_id' => $faker->uuid,
+        'id_album' => $faker->uuid,
         'album' => $faker->sentence(1),
         'view_count' => 0,
     ];

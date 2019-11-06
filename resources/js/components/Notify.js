@@ -6,7 +6,7 @@ class Notify {
 		this.defaultCfg = {
 			open: false,
 			message: '',
-			duration: 4000,
+			duration: 5000,
 			action: [],
 		};
 		this.parent.state.notify = this.defaultCfg;

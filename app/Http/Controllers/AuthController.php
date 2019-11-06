@@ -46,7 +46,14 @@ class AuthController extends Controller
 
 		$user = Auth::user();
 
-		$tokenResult = $user->createToken('Personal Access Token');
+		$scopes = [
+			[],
+			['contribute'],
+			['contribute', 'approve'],
+			['contribute', 'approve'],
+		];
+
+		$tokenResult = $user->createToken('Personal Access Token', $scopes[$user->role]);
 
 		return response()->json([
 			'access_token' => $tokenResult->accessToken,

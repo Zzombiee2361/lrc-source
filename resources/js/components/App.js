@@ -74,7 +74,7 @@ export default class App extends Component {
 				<SidebarDrawer open={this.state.sidebarOpen} toggleSidebar={this.toggleSidebar} user={this.state.user} />
 				<Switch>
 					<Route exact path="/" component={HomePage} />
-					<Route path="/search" component={Search} />
+					<Route path="/search" render={(props) => <Search {...props} notify={this.notify} />} />
 					<Route path="/login" render={(props) => <Login {...props} authenticate={this.auth.authenticate} notify={this.notify} />} />
 					<Route path="/register" render={(props) => <Register {...props} notify={this.notify} />} />
 					<Route path="/logout" render={(props) => <Logout {...props} logout={this.auth.logout} />} />

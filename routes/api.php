@@ -15,15 +15,19 @@ use Illuminate\Http\Request;
 
 Route::get('search', 'MusicBrainzController@search');
 
+Route::group(['middleware' => 'auth:api'], function() {
+	// Route::group(['middleware' => 'scopes:contribute,approve'], function() {
+		Route::post('contribute', 'LyricController@contribute');
+	// });
+});
+
 Route::group([
 	'prefix' => 'auth'
 ], function () {
 	Route::post('login', 'AuthController@login');
 	Route::post('register', 'AuthController@register');
 
-	Route::group([
-		'middleware' => 'auth:api'
-	], function () {
+	Route::group(['middleware' => 'auth:api'], function () {
 		Route::get('logout', 'AuthController@logout');
 		Route::get('user', 'AuthController@user');
 	});
