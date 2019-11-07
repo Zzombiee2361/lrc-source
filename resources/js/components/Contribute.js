@@ -23,11 +23,14 @@ const useStyles = theme => ({
 	appBar: {
 		position: 'relative',
 	},
+	appbarBtn: {
+		marginLeft: theme.spacing(1),
+	},
 	title: {
 		marginLeft: theme.spacing(2),
 		flex: 1,
 	},
-	cardContainer: {
+	gridContainer: {
 		paddingTop: theme.spacing(3),
 		paddingBottom: theme.spacing(3)
 	},
@@ -53,6 +56,7 @@ class Contribute extends Component {
 
 		this.handleChange = this.handleChange.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
+		this.handleFile = this.handleFile.bind(this);
 	}
 
 	handleChange(event) {
@@ -78,6 +82,24 @@ class Contribute extends Component {
 			})
 	}
 
+	handleFile(event) {
+		const el = event.currentTarget;
+		const file = el.files[0];
+		if(file) {
+			const reader = new FileReader();
+			reader.readAsText(file, "UTF-8");
+			reader.onload = (evt) => {
+				this.setState({
+					lyric: evt.target.result
+				});
+			};
+			reader.onerror = (evt) => {
+				console.log(evt);
+				this.props.notify.show('Error reading file');
+			};
+		}
+	}
+
 	render() {
 		const { classes, item } = this.props;
 
@@ -100,13 +122,18 @@ class Contribute extends Component {
 						<Typography variant="h6" className={classes.title}>
 							Contribute Lyric
 						</Typography>
-						<Button autoFocus color="inherit" onClick={this.handleSubmit}>
+						<Button
+							autoFocus
+							color="secondary"
+							variant="contained"
+							onClick={this.handleSubmit}
+						>
 							submit
 						</Button>
 					</Toolbar>
 				</AppBar>
 				<Container>
-					<Grid container justify="center" className={classes.cardContainer}>
+					<Grid container justify="center" className={classes.gridContainer}>
 						<Grid item xs={12} md={6} lg={4}>
 						<Card>
 							<Grid container spacing={0}>
@@ -140,9 +167,23 @@ class Contribute extends Component {
 						multiline
 						variant="outlined"
 						rows="6"
+						rowsMax="15"
 						className={classes.textArea}
 						onChange={this.handleChange}
+						value={this.state.lyric}
 					/>
+					<Grid container justify="center" className={classes.gridContainer}>
+						<Grid item xs={12} md={6} lg={4}>
+						<Button component="label" variant="contained" style={{ display: 'block' }}>
+							Choose File
+							<input
+								type="file"
+								style={{ display: "none" }}
+								onChange={this.handleFile}
+							/>
+						</Button>
+						</Grid>
+					</Grid>
 				</Container>
 			</Dialog>
 		);

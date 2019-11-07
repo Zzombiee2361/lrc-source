@@ -148,7 +148,7 @@ class Search extends Component {
 				return prev + artist.name + (artist.joinphrase ? artist.joinphrase : '');
 			}, '');
 			return (
-				<Grid item md={6} sm={12} key={i}>
+				<Grid item md={6} xs={12} key={i}>
 					<Card>
 						<CardActionArea
 							data-index={i}
@@ -184,6 +184,10 @@ class Search extends Component {
 	}
 
 	openLyricModal(event) {
+		if(this.props.user.email === '' && this.props.user.name === '') {
+			this.props.notify.show('Please login to contribute lyrics');
+			return;
+		}
 		const el = event.currentTarget;
 		const index = parseInt(el.getAttribute('data-index'));
 		this.setState({
@@ -228,7 +232,7 @@ class Search extends Component {
 		return (
 			<React.Fragment>
 				<Container maxWidth="md">
-					<Typography variant="h2" gutterBottom>Search result</Typography>
+					<Typography variant="h3" gutterBottom>Search result</Typography>
 					<Grid container spacing={3}>
 						{resultList}
 					</Grid>
@@ -249,6 +253,7 @@ Search.propTypes = {
 	history: PropTypes.object.isRequired,
 	classes: PropTypes.object,
 	notify: PropTypes.object.isRequired,
+	user: PropTypes.object,
 }
 
 export default withStyles(useStyles)(Search);
