@@ -97,4 +97,25 @@ class LyricController extends Controller {
 			'message' => 'Lyric contributed, waiting moderator approval'
 		]);
 	}
+
+	public function approve(Request $request) {
+		$user = Auth::user();
+		$request->validate([
+			'id' => 'required',
+		]);
+
+		$lyric = Lyric::find($request->input($id));
+		if(!$lyric) {
+			return response()->json([
+				'message' => 'Lyric not found'
+			], 404);
+		}
+
+		$lyric->approved_by = $user->id;
+		$lyric->save();
+
+		return response()->json([
+			'message' => 'Lyric approved'
+		]);
+	}
 }

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import update from 'immutability-helper';
 import PropTypes from 'prop-types';
 import axios from 'axios';
+import emojiFlags from 'emoji-flags';
 
 import  { withStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
@@ -82,19 +83,70 @@ class Search extends Component {
 		result.forEach((recording) => {
 			const releases = recording.releases;
 			if(releases === undefined) return;
+			let earliest;
+			let earliestDate;
+			const qualified = [];
+
 			releases.forEach((release) => {
 				const album = release['release-group'];
 				const notThese = ['Compilation', 'DJ-mix'];
 				const filtered = !(Array.isArray(album['secondary-types']) && album['secondary-types'].some((r) => notThese.includes(r)));
+
 				if(filtered) {
-					const i = results.length;
-					this.fetchCover(release.id, i);
-					release.cover = 'https://via.placeholder.com/150x150?text=Loading...';
-					release.recording = Object.assign({}, recording);
-					delete release.recording.releases;
-					results.push(release);
+					release.score = 0;
+					if(
+						Array.isArray(release.media)
+						&& release.media.length > 0
+						&& release.media[0].format === 'Digital Media'
+					) {
+						release.score += 2;
+					}
+					if(release.country === 'XW') {
+						release.score += 2;
+					}
+
+					if(release.date) {
+						const dt = Date.parse(release.date);
+						if(!earliestDate || earliestDate > dt) {
+							earliest = release;
+							earliestDate = dt;
+						}
+					}
+
+					qualified.push(release);
+
+					// const i = results.length;
+					// this.fetchCover(release.id, i);
+					// release.cover = 'https://via.placeholder.com/150x150?text=Loading...';
+
+					// release.recording = Object.assign({}, recording);
+					// delete release.recording.releases;
+					// results.push(release);
 				}
 			});
+
+			if(qualified.length > 0) {			
+				const bestRelease = qualified.reduce((prev, current) => {
+					if(earliest && earliest.id === current.id) current.score += 1;
+					if(!prev) prev = { score: -1 };
+					return (prev.score > current.score) ? prev : current;
+				}, {});
+
+				let releaseResult = 0;
+				qualified.forEach((release) => {
+					if(release.score >= bestRelease.score-1 && releaseResult < 3) {
+
+						const i = results.length;
+						this.fetchCover(release.id, i);
+						release.cover = 'https://via.placeholder.com/150x150?text=Loading...';
+
+						release.recording = Object.assign({}, recording);
+						delete release.recording.releases;
+						results.push(release);
+						releaseResult++;
+					}
+				});
+			}
 		});
 		return results;
 	}
@@ -147,6 +199,16 @@ class Search extends Component {
 			const artist = listArtist.reduce((prev, artist) => {
 				return prev + artist.name + (artist.joinphrase ? artist.joinphrase : '');
 			}, '');
+			let flag = '';
+			if(item.country === 'XW') {
+				flag = {
+					code: 'XW',
+					emoji: '🌎',
+					name: 'Worldwide'
+				};
+			} else if(item.country) {
+				flag = emojiFlags.countryCode(item.country);
+			}
 			return (
 				<Grid item md={6} xs={12} key={i}>
 					<Card>
@@ -165,7 +227,8 @@ class Search extends Component {
 								<Grid item xs={8}>
 									<CardContent>
 										<Typography gutterBottom variant="h5">
-											{item.recording.title}
+											{item.recording.title}&nbsp;
+											<span title={flag.name}>{flag.emoji}</span>
 										</Typography>
 										<Typography variant="subtitle1" color="textSecondary">
 											{artist}
@@ -190,6 +253,9 @@ class Search extends Component {
 		}
 		const el = event.currentTarget;
 		const index = parseInt(el.getAttribute('data-index'));
+
+		console.log(this.state.result[index]);
+
 		this.setState({
 			lyricOpen: true,
 			selected: index
