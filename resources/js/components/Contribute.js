@@ -173,7 +173,7 @@ class Contribute extends Component {
 						value={this.state.lyric}
 					/>
 					<Grid container justify="center" className={classes.gridContainer}>
-						<Grid item xs={12} md={6} lg={4}>
+						<Grid item xs={6} md={4} lg={2} xl={1}>
 						<Button component="label" variant="contained" style={{ display: 'block' }}>
 							Choose File
 							<input
