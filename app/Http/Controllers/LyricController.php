@@ -10,7 +10,19 @@ use App\Lib\MusicBrainz;
 
 class LyricController extends Controller {
 
+	/**
+	 * Create song
+	 * @param string $id_song MusicBrainz recording MBID
+	 * @param string $id_album MusicBrainz release MBID
+	 * @return \Illuminate\Http\JsonResponse|bool
+	 */
 	private function createSong($id_song, $id_album) {
+
+		/**
+		 * Process MusicBrainz response
+		 * @param $response \GuzzleHttp\Psr7\Response MusicBrainz response
+		 * @return array|\Illuminate\Http\JsonResponse
+		 */
 		function processResponse($response) {
 			if($response->getStatusCode() !== 200) {
 				$msg = (
@@ -22,12 +34,11 @@ class LyricController extends Controller {
 					'success' => false,
 					'data' => response()->json($msg, $response->getStatusCode())
 				];
-			} else {
-				return [
-					'success' => true,
-					'data' => json_decode($response->getBody(), true)
-				];
 			}
+			return [
+				'success' => true,
+				'data' => json_decode($response->getBody(), true)
+			];
 		}
 
 		// get song data

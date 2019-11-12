@@ -2,32 +2,28 @@
 A website to browse and upload .lrc file. Song database is provided by [MusicBrainz](https://musicbrainz.org).
 
 ## How to set up
-Install composer dependency
+Install dependency
 ```
 composer install
-```
 
-Install npm dependecy
-```
 npm install
 ```
 
 Compile javascript
-```
+```bash
+# just compile
 npm run development
-```
 
-Or watch for file change
-```
+# compile and watch for file change
 npm run watch
 ```
 
 Generate application key
 ```
-php generate:key
+php artisan key:generate
 ```
 
-Migrate database
+Copy `.env.example` content to `.env` then migrate database
 ```
 php artisan migrate
 ```
