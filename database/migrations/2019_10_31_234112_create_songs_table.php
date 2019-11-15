@@ -19,7 +19,6 @@ class CreateSongsTable extends Migration
             $table->string('artist');
             $table->char('id_album', 36)->comment('Release MBID');
             $table->string('album');
-            // $table->unsignedBigInteger('id_lyric');
             $table->unsignedInteger('view_count');
             $table->timestamps();
         });

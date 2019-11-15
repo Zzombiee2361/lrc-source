@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateLyricsTable extends Migration
+class CreateRejectedLyrics extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,11 @@ class CreateLyricsTable extends Migration
      */
     public function up()
     {
-        Schema::create('lyrics', function (Blueprint $table) {
-            $table->char('id', 36);
+        Schema::create('rejected_lyrics', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->unsignedBigInteger('id_history');
             $table->unsignedBigInteger('contributed_by');
-            $table->unsignedBigInteger('approved_by');
+            $table->unsignedBigInteger('approved_by')->nullable();
             $table->text('lyric');
             $table->timestamp('created_at')->useCurrent();
         });
@@ -29,6 +30,6 @@ class CreateLyricsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('lyrics');
+        Schema::dropIfExists('rejected_lyrics');
     }
 }

@@ -7,7 +7,6 @@ use Faker\Generator as Faker;
 
 $factory->define(Song::class, function (Faker $faker) {
     return [
-        'id' => $faker->uuid,
         'name' => $faker->sentence(3),
         'artist' => $faker->name,
         'id_album' => $faker->uuid,

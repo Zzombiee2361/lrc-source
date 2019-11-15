@@ -6,9 +6,16 @@ use Illuminate\Database\Eloquent\Model;
 
 class Lyric extends Model
 {
-	public $timestamps = false;
-    public function post() {
-    	return $this->belongsTo('App\Song', 'id_song');
+	protected $keyType = 'string';
+	public $incrementing = false;
+    public $timestamps = false;
+
+    public function song() {
+    	return $this->belongsTo('App\Song', 'id');
+    }
+
+    public function histories() {
+        return $this->hasMany('App\LyricHistory');
     }
 
     public function contributor() {
