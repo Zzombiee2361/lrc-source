@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Song;
 use App\Lyric;
+use App\LyricHistory;
 use App\Lib\MusicBrainz;
 
 class LyricController extends Controller {
@@ -87,19 +88,15 @@ class LyricController extends Controller {
 			['id', $request->input('id_song')],
 			['id_album', $request->input('id_album')]
 		]);
-		$revision = 0;
 		if(!$song) {
 			$create = $this->createSong($request->input(['id_song']), $request->input(['id_album']));
 			if($create !== true) {
 				return $create;
 			}
-		} else {
-			$revision = Lyric::where('id_song', $request->input('id_song'))->max('revision');
 		}
 
 		$lyric = new Lyric;
 		$lyric->id_song = $request->input('id_song');
-		$lyric->revision = $revision+1;
 		$lyric->contributed_by = $user->id;
 		$lyric->lyric = $request->input('lyric');
 		$lyric->save();
@@ -114,8 +111,9 @@ class LyricController extends Controller {
 		$request->validate([
 			'id' => 'required',
 		]);
+		$id = $request->input('id');
 
-		$lyric = Lyric::find($request->input($id));
+		$lyric = Lyric::find($id);
 		if(!$lyric) {
 			return response()->json([
 				'message' => 'Lyric not found'
@@ -125,8 +123,22 @@ class LyricController extends Controller {
 		$lyric->approved_by = $user->id;
 		$lyric->save();
 
+		$revision = 0;
+		if(LyricHistory::where('id_lyric', $id)->first()) {
+			$revision = LyricHistory::where('id_lyric', $id)->max('revision');
+		}
+		$lyricHistory = new LyricHistory;
+		$lyricHistory->id_lyric = $id;
+		$lyricHistory->revision = $revision+1;
+		$lyricHistory->contributed_by = $lyric->contributed_by;
+		$lyricHistory->approved_by = $user->id;
+		$lyricHistory->lyric = $lyric->lyric;
+		$lyricHistory->save();
+
 		return response()->json([
-			'message' => 'Lyric approved'
+			'message' => 'Lyric approved',
+			'lyric' => $lyric,
+			'history' => $lyricHistory,
 		]);
 	}
 }
