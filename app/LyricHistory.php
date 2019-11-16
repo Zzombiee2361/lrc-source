@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class LyricHistory extends Model
 {
     protected $table = 'lyric_history';
+    public $timestamps = false;
 
     public function lyric() {
     	return $this->belongsTo('App\Lyric', 'id_lyric');

@@ -11,7 +11,6 @@ $factory->define(Lyric::class, function (Faker $faker) {
     $user = User::all();
     $reviewer = User::where('role_id', 3)->get();
     return [
-        'id' => $faker->uuid,
         'contributed_by' => $user->random()->id,
         'approved_by' => $reviewer->random()->id,
         'lyric' => $faker->text

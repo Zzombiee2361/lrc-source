@@ -15,7 +15,7 @@ class Lyric extends Model
     }
 
     public function histories() {
-        return $this->hasMany('App\LyricHistory');
+        return $this->hasMany('App\LyricHistory', 'id_lyric');
     }
 
     public function contributor() {
