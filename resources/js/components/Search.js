@@ -17,7 +17,8 @@ import Contribute from './Contribute';
 
 const useStyles = {
 	image: {
-		height: '100%'
+		width: '100%',
+		paddingBottom: '100%',
 	}
 };
 
@@ -199,6 +200,12 @@ class Search extends Component {
 			const artist = listArtist.reduce((prev, artist) => {
 				return prev + artist.name + (artist.joinphrase ? artist.joinphrase : '');
 			}, '');
+
+			let album = item.title;
+			if(typeof item['release-group'] === 'object' && item['release-group']['primary-type']) {
+				album += ' - ' + item['release-group']['primary-type'];
+			}
+
 			let flag = '';
 			if(item.country === 'XW') {
 				flag = {
@@ -209,6 +216,7 @@ class Search extends Component {
 			} else if(item.country) {
 				flag = emojiFlags.countryCode(item.country);
 			}
+
 			return (
 				<Grid item md={6} xs={12} key={i}>
 					<Card>
@@ -217,14 +225,14 @@ class Search extends Component {
 							onClick={this.openLyricModal}
 						>
 							<Grid container spacing={0}>
-								<Grid item xs={4}>
+								<Grid item xs={12} sm={5}>
 									<CardMedia
 										className={classes.image}
 										image={item.cover}
 										title={item.title}
 									/>
 								</Grid>
-								<Grid item xs={8}>
+								<Grid item xs={12} sm={7}>
 									<CardContent>
 										<Typography gutterBottom variant="h5">
 											{item.recording.title}&nbsp;
@@ -234,7 +242,7 @@ class Search extends Component {
 											{artist}
 										</Typography>
 										<Typography variant="subtitle2" color="textSecondary">
-											{item.title}
+											{album}
 										</Typography>
 									</CardContent>
 								</Grid>

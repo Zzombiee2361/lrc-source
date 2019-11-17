@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
+import emojiFlags from 'emoji-flags';
 
 import  { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
@@ -35,7 +36,8 @@ const useStyles = theme => ({
 		paddingBottom: theme.spacing(3)
 	},
 	image: {
-		height: '100%'
+		width: '100%',
+		paddingBottom: '100%',
 	},
 	textArea: {
 		width: '100%',
@@ -103,7 +105,7 @@ class Contribute extends Component {
 	render() {
 		const { classes, item } = this.props;
 
-		if(Object.keys(item).length === 0){
+		if(!item || Object.keys(item).length === 0){
 			return null;
 		}
 
@@ -111,6 +113,22 @@ class Contribute extends Component {
 		const artist = listArtist.reduce((prev, artist) => {
 			return prev + artist.name + (artist.joinphrase ? artist.joinphrase : '');
 		}, '');
+
+		let album = item.title;
+		if(typeof item['release-group'] === 'object' && item['release-group']['primary-type']) {
+			album += ' - ' + item['release-group']['primary-type'];
+		}
+
+		let flag = '';
+		if(item.country === 'XW') {
+			flag = {
+				code: 'XW',
+				emoji: '🌎',
+				name: 'Worldwide'
+			};
+		} else if(item.country) {
+			flag = emojiFlags.countryCode(item.country);
+		}
 
 		return (
 			<Dialog fullScreen open={this.props.lyricOpen} onClose={this.props.handleClose} TransitionComponent={Transition}>
@@ -134,26 +152,27 @@ class Contribute extends Component {
 				</AppBar>
 				<Container>
 					<Grid container justify="center" className={classes.gridContainer}>
-						<Grid item xs={12} md={6} lg={4}>
+						<Grid item xs={12} md={7} lg={5}>
 						<Card>
 							<Grid container spacing={0}>
-								<Grid item xs={4}>
+								<Grid item xs={12} sm={5}>
 									<CardMedia
 										className={classes.image}
 										image={item.cover}
 										title={item.title}
 									/>
 								</Grid>
-								<Grid item xs={8}>
-									<CardContent>
+								<Grid item xs={12} sm={7}>
+								<CardContent>
 										<Typography gutterBottom variant="h5">
-											{item.recording.title}
+											{item.recording.title}&nbsp;
+											<span title={flag.name}>{flag.emoji}</span>
 										</Typography>
 										<Typography variant="subtitle1" color="textSecondary">
 											{artist}
 										</Typography>
 										<Typography variant="subtitle2" color="textSecondary">
-											{item.title}
+											{album}
 										</Typography>
 									</CardContent>
 								</Grid>
