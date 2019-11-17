@@ -9,8 +9,10 @@ class LyricHistory extends Model
     protected $table = 'lyric_history';
     public $timestamps = false;
 
-    public function lyric() {
-    	return $this->belongsTo('App\Lyric', 'id_lyric');
+    protected $guarded = ['created_at'];
+
+    public function song() {
+    	return $this->belongsTo('App\Song', 'id_song');
     }
 
     public function contributor() {

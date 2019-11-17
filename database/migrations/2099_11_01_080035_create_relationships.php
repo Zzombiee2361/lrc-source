@@ -22,7 +22,7 @@ class CreateRelationships extends Migration
         	$table->foreign('approved_by')->references('id')->on('users');
         });
         Schema::table('lyric_history', function (Blueprint $table) {
-        	$table->foreign('id_lyric')->references('id')->on('lyrics');
+        	$table->foreign('id_song')->references('id')->on('songs');
         	$table->foreign('contributed_by')->references('id')->on('users');
         	$table->foreign('approved_by')->references('id')->on('users');
         });
@@ -49,7 +49,7 @@ class CreateRelationships extends Migration
             $table->dropForeign(['approved_by']);
         });
         Schema::table('lyric_history', function (Blueprint $table) {
-            $table->dropForeign(['id_lyric']);
+            $table->dropForeign(['id_song']);
             $table->dropForeign(['contributed_by']);
             $table->dropForeign(['approved_by']);
         });

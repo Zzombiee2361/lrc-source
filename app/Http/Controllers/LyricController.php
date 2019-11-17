@@ -84,22 +84,30 @@ class LyricController extends Controller {
 			'lyric' => 'required|string'
 		]);
 
+		$id = $request->input('id_song');
+		$album = $request->input('id_album');
+
 		$song = Song::where([
-			['id', $request->input('id_song')],
-			['id_album', $request->input('id_album')]
-		]);
-		if(!$song) {
-			$create = $this->createSong($request->input(['id_song']), $request->input(['id_album']));
+			['id', $id],
+			['id_album', $album]
+		])->get();
+		if($song->isEmpty()) {
+			$create = $this->createSong($id, $album);
 			if($create !== true) {
 				return $create;
 			}
 		}
 
-		$lyric = new Lyric;
-		$lyric->id_song = $request->input('id_song');
-		$lyric->contributed_by = $user->id;
-		$lyric->lyric = $request->input('lyric');
-		$lyric->save();
+		$revision = 0;
+		if(LyricHistory::where('id_song', $id)->first()) {
+			$revision = LyricHistory::where('id_song', $id)->max('revision');
+		}
+		$lyricHistory = new LyricHistory;
+		$lyricHistory->id_song = $id;
+		$lyricHistory->revision = $revision+1;
+		$lyricHistory->contributed_by = $user->id;
+		$lyricHistory->lyric = $request->input('lyric');
+		$lyricHistory->save();
 
 		return response()->json([
 			'message' => 'Lyric contributed, waiting moderator approval'
@@ -113,27 +121,23 @@ class LyricController extends Controller {
 		]);
 		$id = $request->input('id');
 
-		$lyric = Lyric::find($id);
-		if(!$lyric) {
-			return response()->json([
-				'message' => 'Lyric not found'
-			], 404);
-		}
+		// TODO: get this to work
 
-		$lyric->approved_by = $user->id;
-		$lyric->save();
+		// $lyric = Lyric::find($id);
+		// if(!$lyric) {
+		// 	return response()->json([
+		// 		'message' => 'Lyric not found'
+		// 	], 404);
+		// }
 
-		$revision = 0;
-		if(LyricHistory::where('id_lyric', $id)->first()) {
-			$revision = LyricHistory::where('id_lyric', $id)->max('revision');
-		}
-		$lyricHistory = new LyricHistory;
-		$lyricHistory->id_lyric = $id;
-		$lyricHistory->revision = $revision+1;
-		$lyricHistory->contributed_by = $lyric->contributed_by;
-		$lyricHistory->approved_by = $user->id;
-		$lyricHistory->lyric = $lyric->lyric;
-		$lyricHistory->save();
+		// $lyric->approved_by = $user->id;
+		// $lyric->save();
+
+		// $lyric = new Lyric;
+		// $lyric->id = $request->input('id_song');
+		// $lyric->contributed_by = $user->id;
+		// $lyric->lyric = $request->input('lyric');
+		// $lyric->save();
 
 		return response()->json([
 			'message' => 'Lyric approved',

@@ -20,7 +20,7 @@ class AuthController extends Controller
 			'name' => $request->name,
 			'email' => $request->email,
 			'password' => bcrypt($request->password),
-			'role' => '1',
+			'role_id' => '1',
 		]);
 
 		$user->save();
@@ -53,7 +53,7 @@ class AuthController extends Controller
 			['contribute', 'approve'],
 		];
 
-		$tokenResult = $user->createToken('Personal Access Token', $scopes[$user->role]);
+		$tokenResult = $user->createToken('Personal Access Token', $scopes[$user->role_id - 1]);
 
 		return response()->json([
 			'access_token' => $tokenResult->accessToken,

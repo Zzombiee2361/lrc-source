@@ -15,7 +15,7 @@ class CreateLyricHistory extends Migration
     {
         Schema::create('lyric_history', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->char('id_lyric', 36);
+            $table->char('id_song', 36);
             $table->unsignedSmallInteger('revision');
             $table->unsignedBigInteger('contributed_by');
             $table->unsignedBigInteger('approved_by')->nullable();

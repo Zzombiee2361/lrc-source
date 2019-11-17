@@ -19,18 +19,18 @@ class SongLyricSeeder extends Seeder
 
         factory(App\Song::class, 10)->create()->each(function($song) {
 
-            factory(App\Lyric::class)->create(['id' => $song->id])->each(function ($lyric) {
+            factory(App\Lyric::class)->create(['id' => $song->id])->each(function ($lyric) use ($song) {
                 $GLOBALS['revision'] = 1;
                 $revision_count = rand(1, 3);
                 if($revision_count > 1) {
-                    $lyric->histories()->saveMany(
-                        factory(App\LyricHistory::class, $revision_count-1)->make(['id_lyric' => $lyric->id])
+                    $song->histories()->saveMany(
+                        factory(App\LyricHistory::class, $revision_count-1)->make(['id_song' => $lyric->id])
                     );
                 }
 
-                $lyric->histories()->save(
+                $song->histories()->save(
                     factory(App\LyricHistory::class)->make([
-                        'id_lyric' => $lyric->id,
+                        'id_song' => $lyric->id,
                         'contributed_by' => $lyric->contributed_by,
                         'approved_by' => $lyric->approved_by,
                         'lyric' => $lyric->lyric

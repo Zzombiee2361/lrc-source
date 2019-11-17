@@ -11,5 +11,10 @@ class Song extends Model
 
     public function lyric() {
     	return $this->hasOne('App\Lyric', 'id');
+	}
+
+    public function histories() {
+        return $this->hasMany('App\LyricHistory', 'id_song');
     }
+
 }
