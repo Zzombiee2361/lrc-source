@@ -144,7 +144,7 @@ class LyricController extends Controller {
 			// get previous revision that's not approved
 			$not_approved = LyricHistory::where([
 				'id_song' => $id_song,
-				'revision <' => $newest_revision
+				['revision', '<', $newest_revision]
 			])
 			->whereNull('approved_by')
 			->orderBy('revision', 'desc')
@@ -163,9 +163,9 @@ class LyricController extends Controller {
 			// convert previous lyric to opcode, if there's any
 			if($prevItem->revision > 1) {
 				$prevHistory = LyricHistory::where([
-					'id_song' => $history->id_song
+					'id_song' => $history->id_song,
+					'revision' => $prevItem->revision - 1
 				])
-				->whereNotNull('approved_by')
 				->orderBy('revision', 'desc')
 				->first();
 				
@@ -188,10 +188,12 @@ class LyricController extends Controller {
 				'message' => 'Lyric approved',
 			]);
 		} catch (\Throwable $exc) {
+			$code = intval($exc->getCode());
+			$code = !!$code ? $code : 500;
 			DB::rollBack();
 			return response()->json([
-				'message' => $exc->getMessage(),
-			], $exc->getCode() ? $exc->getCode() : 500);
+				'message' => $exc->getMessage()
+			], $code);
 		}
 	}
 }
