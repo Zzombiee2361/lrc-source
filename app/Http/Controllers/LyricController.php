@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use cogpowered\FineDiff;
 use App\Song;
 use App\Lyric;
 use App\LyricHistory;
@@ -76,6 +78,12 @@ class LyricController extends Controller {
 		return true;
 	}
 
+	private function getOpcodes($string_one, $string_two) {
+		$granularity = new FineDiff\Granularity\Word;
+		$diff = new FineDiff\Diff($granularity);
+		return $diff->getOpcodes($string_one, $string_two);
+	}
+
 	public function contribute(Request $request) {
 		$user = Auth::user();
 		$request->validate([
@@ -114,35 +122,76 @@ class LyricController extends Controller {
 		]);
 	}
 
+	// TODO: test this code
 	public function approve(Request $request) {
 		$user = Auth::user();
 		$request->validate([
 			'id' => 'required',
 		]);
-		$id = $request->input('id');
+		$id_history = $request->input('id');
 
-		// TODO: get this to work
+		DB::beginTransaction();
+		try {
+			$history = LyricHistory::find($id_history);
+			if($history->approved_by !== null) throw new \Exception("Already Approved", 400);
 
-		// $lyric = Lyric::find($id);
-		// if(!$lyric) {
-		// 	return response()->json([
-		// 		'message' => 'Lyric not found'
-		// 	], 404);
-		// }
+			// approve selected history
+			$history->approved_by = $user->id;
+			$history->save();
+			$id_song = $history->id_song;
+			$newest_revision = $history->revision;
 
-		// $lyric->approved_by = $user->id;
-		// $lyric->save();
+			// get previous revision that's not approved
+			$not_approved = LyricHistory::where([
+				'id_song' => $id_song,
+				'revision <' => $newest_revision
+			])
+			->whereNull('approved_by')
+			->orderBy('revision', 'desc')
+			->get();
 
-		// $lyric = new Lyric;
-		// $lyric->id = $request->input('id_song');
-		// $lyric->contributed_by = $user->id;
-		// $lyric->lyric = $request->input('lyric');
-		// $lyric->save();
+			// loop through and approve
+			$prevItem = $history;
+			foreach ($not_approved as $item) {
+				$item->approved_by = $user->id;
+				$opcode = $this->getOpcodes($item->lyric, $prevItem->lyric);
+				$item->lyric = $opcode;
+				$item->save();
+				$prevItem = $item;
+			}
 
-		return response()->json([
-			'message' => 'Lyric approved',
-			'lyric' => $lyric,
-			'history' => $lyricHistory,
-		]);
+			// convert previous lyric to opcode, if there's any
+			if($prevItem->revision > 1) {
+				$prevHistory = LyricHistory::where([
+					'id_song' => $history->id_song
+				])
+				->whereNotNull('approved_by')
+				->orderBy('revision', 'desc')
+				->first();
+				
+				$opcode = $this->getOpcodes($history->lyric, $prevHistory->lyric);
+				$prevHistory->lyric = $opcode;
+				$prevHistory->save();
+			}
+
+			Lyric::updateOrCreate(
+				['id' => $id_song],
+				[
+					'contributed_by' => $history->contributed_by,
+					'approved_by' => $history->approved_by,
+					'lyric' => $history->lyric,
+				]
+			);
+
+			DB::commit();
+			return response()->json([
+				'message' => 'Lyric approved',
+			]);
+		} catch (\Throwable $exc) {
+			DB::rollBack();
+			return response()->json([
+				'message' => $exc->getMessage(),
+			], $exc->getCode() ? $exc->getCode() : 500);
+		}
 	}
 }

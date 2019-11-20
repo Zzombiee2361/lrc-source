@@ -19,7 +19,7 @@ Route::group(['middleware' => ['auth:api', 'scopes:contribute']], function() {
 	Route::post('contribute', 'LyricController@contribute');
 });
 
-Route::group(['middleware' => ['auth:api', 'scopes:contribute,approve']], function() {
+Route::group(['middleware' => ['auth:api', 'scopes:approve']], function() {
 	Route::post('approve', 'LyricController@approve');
 });
 
