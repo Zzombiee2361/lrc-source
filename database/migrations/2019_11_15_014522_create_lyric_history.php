@@ -21,6 +21,8 @@ class CreateLyricHistory extends Migration
             $table->unsignedBigInteger('approved_by')->nullable();
             $table->text('lyric');
             $table->timestamp('created_at')->useCurrent();
+
+            $table->index('id_song');
         });
     }
 
