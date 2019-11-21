@@ -122,7 +122,6 @@ class LyricController extends Controller {
 		]);
 	}
 
-	// TODO: test this code
 	public function approve(Request $request) {
 		$user = Auth::user();
 		$request->validate([
@@ -151,24 +150,27 @@ class LyricController extends Controller {
 			->get();
 
 			// loop through and approve
-			$prevItem = $history;
+			$prevLyric = $history->lyric;
+			$lastRevision = $history->revision;
 			foreach ($not_approved as $item) {
+				$prevLyric = $item->lyric;
+				$lastRevision = $item->revision;
+
 				$item->approved_by = $user->id;
-				$opcode = $this->getOpcodes($item->lyric, $prevItem->lyric);
+				$opcode = $this->getOpcodes($item->lyric, $prevLyric);
 				$item->lyric = $opcode;
 				$item->save();
-				$prevItem = $item;
 			}
 
 			// convert previous lyric to opcode, if there's any
-			if($prevItem->revision > 1) {
+			if($lastRevision > 1) {
 				$prevHistory = LyricHistory::where([
 					'id_song' => $history->id_song,
-					'revision' => $prevItem->revision - 1
+					'revision' => $lastRevision - 1
 				])
 				->orderBy('revision', 'desc')
 				->first();
-				
+
 				$opcode = $this->getOpcodes($history->lyric, $prevHistory->lyric);
 				$prevHistory->lyric = $opcode;
 				$prevHistory->save();
@@ -195,5 +197,54 @@ class LyricController extends Controller {
 				'message' => $exc->getMessage()
 			], $code);
 		}
+	}
+
+	public function getRevision(Request $request) {
+		$request->validate([
+			'id_song' => 'required|uuid',
+			'revision' => 'required|int',
+			'approve_only' => 'string',
+		]);
+
+		$id_song = $request->input('id_song');
+		$revision = $request->input('revision');
+		$approve_only = $request->input('approve_only', 'true');
+		$approve_only = ($approve_only === 'true' ? true : false);
+
+		$histories = LyricHistory::where([
+			['id_song', '=', $id_song],
+			['revision', '>=', $revision]
+		])
+		->orderBy('revision', 'desc');
+
+		if($approve_only) {
+			$histories->whereNotNull('approved_by');
+		}
+		$histories = $histories->get();
+
+		if($histories->isEmpty()) {
+			return response()->json([
+				'message' => 'No revision found'
+			], 404);
+		}
+
+		$render = new FineDiff\Render\Text;
+		$lastLyric = '';
+		$lastHistory = null;
+		foreach ($histories as $history) {
+			if($lastHistory === null || $lastHistory->approved_by === null) {
+				$lastLyric = $history->lyric;
+			} else {
+				$lastLyric = $render->process($lastLyric, $history->lyric);
+			}
+			$lastHistory = $history;
+		}
+		$lastHistory->lyric = $lastLyric;
+
+		return response()->json([
+			'message' => 'success',
+			'data' => $lastHistory,
+			// 'history' => $histories
+		]);
 	}
 }

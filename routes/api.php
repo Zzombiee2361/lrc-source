@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 */
 
 Route::get('search', 'MusicBrainzController@search');
+Route::get('get_revision', 'LyricController@getRevision');
 
 Route::group(['middleware' => ['auth:api', 'scopes:contribute']], function() {
 	Route::post('contribute', 'LyricController@contribute');
