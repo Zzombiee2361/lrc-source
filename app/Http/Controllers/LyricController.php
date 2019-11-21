@@ -125,7 +125,7 @@ class LyricController extends Controller {
 	public function approve(Request $request) {
 		$user = Auth::user();
 		$request->validate([
-			'id' => 'required',
+			'id' => 'required|int',
 		]);
 		$id_history = $request->input('id');
 
@@ -153,13 +153,14 @@ class LyricController extends Controller {
 			$prevLyric = $history->lyric;
 			$lastRevision = $history->revision;
 			foreach ($not_approved as $item) {
-				$prevLyric = $item->lyric;
-				$lastRevision = $item->revision;
-
+				$currentLyric = $item->lyric;
 				$item->approved_by = $user->id;
-				$opcode = $this->getOpcodes($item->lyric, $prevLyric);
+				$opcode = (string) $this->getOpcodes($prevLyric, $currentLyric);
 				$item->lyric = $opcode;
 				$item->save();
+
+				$prevLyric = $currentLyric;
+				$lastRevision = $item->revision;
 			}
 
 			// convert previous lyric to opcode, if there's any
@@ -244,7 +245,64 @@ class LyricController extends Controller {
 		return response()->json([
 			'message' => 'success',
 			'data' => $lastHistory,
-			// 'history' => $histories
 		]);
+	}
+
+	public function reject(Request $request) {
+		$request->validate([
+			'id' => 'required|int'
+		]);
+
+		$rejected = LyricHistory::find($request->input('id'));
+		if(!$rejected) {
+			return response()->json([
+				'message' => 'No lyric found'
+			], 404);
+		}
+
+		$id_song = $rejected->id_song;
+		$revision = $rejected->revision;
+
+		$rejected = LyricHistory::where([
+			'id_song' => $id_song,
+			['revision', '>=', $revision]
+		])->orderBy('revision')->get();
+
+		DB::beginTransaction();
+		try {
+			// TODO: REJECT
+			// make rejected_lyrics model and set mass assignment
+			// copy rejected_lyric and the following revision
+			// set id_history to id of current lyric
+			// delete from lyric_history
+
+			DB::commit();
+			return response()->json([
+				'message' => 'Lyric rejected',
+			]);
+		} catch (\Throwable $exc) {
+			$code = intval($exc->getCode());
+			$code = !!$code ? $code : 500;
+			DB::rollBack();
+			return response()->json([
+				'message' => $exc->getMessage()
+			], $code);
+		}
+	}
+
+	public function testFunc(Request $request) {
+		$mode = $request->input('mode');
+		$string1 = $request->input('string1');
+		$string2 = $request->input('string2');
+		
+		$result = [];
+		if($mode === 'get opcode') {
+			$result['opcode'] = (string) $this->getOpcodes($string1, $string2);
+		} else if($mode === 'process opcode') {
+			$render = new FineDiff\Render\Text;
+			$result['text'] = $render->process($string1, $string2);
+		}
+
+		return response()->json($result);
 	}
 }

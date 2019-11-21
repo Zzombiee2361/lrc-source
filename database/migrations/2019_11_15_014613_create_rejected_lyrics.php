@@ -15,7 +15,7 @@ class CreateRejectedLyrics extends Migration
     {
         Schema::create('rejected_lyrics', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('id_history');
+            $table->unsignedBigInteger('id_history')->comment('Parent history');
             $table->unsignedBigInteger('contributed_by');
             $table->unsignedBigInteger('approved_by')->nullable();
             $table->text('lyric');
