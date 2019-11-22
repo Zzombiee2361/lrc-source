@@ -24,6 +24,7 @@ Route::group(['middleware' => ['auth:api', 'scopes:contribute']], function() {
 
 Route::group(['middleware' => ['auth:api', 'scopes:approve']], function() {
 	Route::post('approve', 'LyricController@approve');
+	Route::post('reject', 'LyricController@reject');
 });
 
 Route::group([

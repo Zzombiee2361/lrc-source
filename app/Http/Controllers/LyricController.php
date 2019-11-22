@@ -9,6 +9,7 @@ use cogpowered\FineDiff;
 use App\Song;
 use App\Lyric;
 use App\LyricHistory;
+use App\RejectedLyric;
 use App\Lib\MusicBrainz;
 
 class LyricController extends Controller {
@@ -243,12 +244,13 @@ class LyricController extends Controller {
 		$lastHistory->lyric = $lastLyric;
 
 		return response()->json([
-			'message' => 'success',
+			'message' => 'Success',
 			'data' => $lastHistory,
 		]);
 	}
 
 	public function reject(Request $request) {
+		$user = Auth::user();
 		$request->validate([
 			'id' => 'required|int'
 		]);
@@ -268,13 +270,22 @@ class LyricController extends Controller {
 			['revision', '>=', $revision]
 		])->orderBy('revision')->get();
 
+		$lyric = LyricHistory::where('id_song', $id_song)
+			->whereNotNull('approved_by')
+			->orderBy('revision', 'desc')
+			->first();
+
 		DB::beginTransaction();
 		try {
-			// TODO: REJECT
-			// make rejected_lyrics model and set mass assignment
-			// copy rejected_lyric and the following revision
-			// set id_history to id of current lyric
-			// delete from lyric_history
+			foreach ($rejected as $item) {
+				$reject = new RejectedLyric;
+				$reject->id_history = $lyric->id;
+				$reject->contributed_by = $item->contributed_by;
+				$reject->rejected_by = $user->id;
+				$reject->lyric = $this->getOpcodes($lyric->lyric, $item->lyric);
+				$reject->save();
+				$item->delete();
+			}
 
 			DB::commit();
 			return response()->json([

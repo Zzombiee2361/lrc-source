@@ -4,19 +4,15 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class LyricHistory extends Model
+class RejectedLyric extends Model
 {
-    protected $table = 'lyric_history';
+    protected $table = 'rejected_lyrics';
     public $timestamps = false;
 
     protected $guarded = ['created_at'];
 
-    public function song() {
-    	return $this->belongsTo('App\Song', 'id_song');
-    }
-
-    public function rejected() {
-        return $this->hasMany('App\RejectedLyric', 'id_history');
+    public function history() {
+    	return $this->belongsTo('App\LyricHistory', 'id_history');
     }
 
     public function contributor() {

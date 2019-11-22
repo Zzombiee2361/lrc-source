@@ -17,7 +17,7 @@ class CreateRejectedLyrics extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('id_history')->comment('Parent history');
             $table->unsignedBigInteger('contributed_by');
-            $table->unsignedBigInteger('approved_by')->nullable();
+            $table->unsignedBigInteger('rejected_by');
             $table->text('lyric');
             $table->timestamp('created_at')->useCurrent();
         });
