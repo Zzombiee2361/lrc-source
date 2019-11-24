@@ -6,9 +6,15 @@ import  { fade, withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import InputBase from '@material-ui/core/InputBase';
+import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
+import Hidden from '@material-ui/core/Hidden';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
 
 import SearchIcon from '@material-ui/icons/Search';
 import MenuIcon from '@material-ui/icons/Menu';
@@ -41,7 +47,12 @@ const useStyles = theme => ({
 class MenuBar extends Component {
 	constructor(props) {
 		super(props);
+		this.state = {
+			searchModal: false
+		}
 
+		this.handleOpen = this.handleOpen.bind(this);
+		this.handleClose = this.handleClose.bind(this);
 		this.handleSearchField = this.handleSearchField.bind(this);
 		this.handleSearch = this.handleSearch.bind(this);
 	}
@@ -59,6 +70,15 @@ class MenuBar extends Component {
 			'artist:'+this.state.searchArtist
 		];
 		this.props.history.push('/search?query='+data.join(' AND '));
+		if(this.state.searchModal) this.handleClose();
+	}
+
+	handleOpen() {
+		this.setState({ searchModal: true });
+	}
+	
+	handleClose() {
+		this.setState({ searchModal: false });
 	}
 
 	render() {
@@ -78,6 +98,7 @@ class MenuBar extends Component {
 					<Typography variant="h5" className={`${classes.grow} ${classes.menuTitle}`} component={Link} to="/">
 						LRC Source
 					</Typography>
+					<Hidden smDown>
 					<form onSubmit={this.handleSearch}>
 						<InputBase
 							placeholder="Title"
@@ -108,6 +129,41 @@ class MenuBar extends Component {
 							Search
 						</Button>
 					</form>
+					</Hidden>
+					<Hidden mdUp>
+						<IconButton
+							aria-label="open search modal"
+							color="inherit"
+							onClick={this.handleOpen}
+						>
+							<SearchIcon />
+						</IconButton> 
+						<Dialog open={this.state.searchModal} onClose={this.handleClose} aria-labelledby="search-dialog-title">
+							<DialogTitle id="search-dialog-title">Search</DialogTitle>
+							<DialogContent>
+								<TextField
+									label="Title"
+									name="searchTitle"
+									inputProps={{ 'aria-label': 'search title' }}
+									onChange={this.handleSearchField}
+								/>
+								<TextField
+									label="Artist"
+									name="searchArtist"
+									inputProps={{ 'aria-label': 'search artist' }}
+									onChange={this.handleSearchField}
+								/>
+							</DialogContent>
+							<DialogActions>
+								<Button onClick={this.handleClose} color="primary">
+									Cancel
+								</Button>
+								<Button onClick={this.handleSearch} variant="contained" color="primary">
+									Search
+								</Button>
+							</DialogActions>
+						</Dialog>
+					</Hidden>
 				</Toolbar>
 			</AppBar>
 		);

@@ -14,7 +14,11 @@ class MusicBrainzController extends Controller {
 			'offset' => 'integer',
 		]);
 		$response = MusicBrainz::search($validatedData);
-		echo $response->getBody();
+		if(method_exists($response, 'getBody')) {
+			echo $response->getBody();
+		} else {
+			echo $response->getMessage();
+		}
 		// var_dump($response);
 	}
 }

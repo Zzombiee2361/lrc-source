@@ -19,6 +19,7 @@ import CardMedia from '@material-ui/core/CardMedia';
 import TextField from '@material-ui/core/TextField';
 
 import CloseIcon from '@material-ui/icons/Close';
+import DescriptionIcon from '@material-ui/icons/Description';
 
 const useStyles = theme => ({
 	appBar: {
@@ -151,56 +152,58 @@ class Contribute extends Component {
 					</Toolbar>
 				</AppBar>
 				<Container>
-					<Grid container justify="center" className={classes.gridContainer}>
-						<Grid item xs={12} md={7} lg={5}>
-						<Card>
-							<Grid container spacing={0}>
-								<Grid item xs={12} sm={5}>
-									<CardMedia
-										className={classes.image}
-										image={item.cover}
-										title={item.title}
-									/>
+					<Grid container className={classes.gridContainer} spacing={2}>
+						<Grid item xs={12} sm={4} md={3}>
+							<Card>
+								<Grid container spacing={0}>
+									<Grid item xs={12}>
+										<CardMedia
+											className={classes.image}
+											image={item.cover + '"), url("/img/cover-generic.svg'}
+											title={item.title}
+										/>
+									</Grid>
+									<Grid item xs={12}>
+									<CardContent>
+											<Typography gutterBottom variant="h5">
+												{item.recording.title}&nbsp;
+												<span title={flag.name}>{flag.emoji}</span>
+											</Typography>
+											<Typography variant="subtitle1" color="textSecondary">
+												{artist}
+											</Typography>
+											<Typography variant="subtitle2" color="textSecondary">
+												{album}
+											</Typography>
+										</CardContent>
+									</Grid>
 								</Grid>
-								<Grid item xs={12} sm={7}>
-								<CardContent>
-										<Typography gutterBottom variant="h5">
-											{item.recording.title}&nbsp;
-											<span title={flag.name}>{flag.emoji}</span>
-										</Typography>
-										<Typography variant="subtitle1" color="textSecondary">
-											{artist}
-										</Typography>
-										<Typography variant="subtitle2" color="textSecondary">
-											{album}
-										</Typography>
-									</CardContent>
-								</Grid>
-							</Grid>
-						</Card>
+							</Card>
+							<Button
+								color="secondary"
+								component="label"
+								variant="contained"
+								style={{ margin: '10px' }}
+								startIcon={<DescriptionIcon />}
+							>
+								Upload File
+								<input
+									type="file"
+									style={{ display: "none" }}
+									onChange={this.handleFile}
+								/>
+							</Button>
 						</Grid>
-					</Grid>
-					<TextField
-						label="Lyric"
-						name="lyric"
-						multiline
-						variant="outlined"
-						rows="6"
-						rowsMax="15"
-						className={classes.textArea}
-						onChange={this.handleChange}
-						value={this.state.lyric}
-					/>
-					<Grid container justify="center" className={classes.gridContainer}>
-						<Grid item xs={6} md={4} lg={2} xl={1}>
-						<Button component="label" variant="contained" style={{ display: 'block' }}>
-							Choose File
-							<input
-								type="file"
-								style={{ display: "none" }}
-								onChange={this.handleFile}
+						<Grid item xs={12} sm={8} md={9}>
+							<TextField
+								label="Lyric"
+								name="lyric"
+								multiline
+								variant="outlined"
+								className={classes.textArea}
+								onChange={this.handleChange}
+								value={this.state.lyric}
 							/>
-						</Button>
 						</Grid>
 					</Grid>
 				</Container>

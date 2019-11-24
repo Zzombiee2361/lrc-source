@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import update from 'immutability-helper';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import emojiFlags from 'emoji-flags';
@@ -40,7 +39,6 @@ class Search extends Component {
 
 		this.search = this.search.bind(this);
 		this.filterResult = this.filterResult.bind(this);
-		this.fetchCover = this.fetchCover.bind(this);
 		this.renderResult = this.renderResult.bind(this);
 		this.openLyricModal = this.openLyricModal.bind(this);
 		this.closeLyricModal = this.closeLyricModal.bind(this);
@@ -115,14 +113,6 @@ class Search extends Component {
 					}
 
 					qualified.push(release);
-
-					// const i = results.length;
-					// this.fetchCover(release.id, i);
-					// release.cover = 'https://via.placeholder.com/150x150?text=Loading...';
-
-					// release.recording = Object.assign({}, recording);
-					// delete release.recording.releases;
-					// results.push(release);
 				}
 			});
 
@@ -136,11 +126,7 @@ class Search extends Component {
 				let releaseResult = 0;
 				qualified.forEach((release) => {
 					if(release.score >= bestRelease.score-1 && releaseResult < 3) {
-
-						const i = results.length;
-						this.fetchCover(release.id, i);
-						release.cover = 'https://via.placeholder.com/150x150?text=Loading...';
-
+						release.cover = 'http://coverartarchive.org/release/' + release.id + '/front-250';
 						release.recording = Object.assign({}, recording);
 						delete release.recording.releases;
 						results.push(release);
@@ -150,39 +136,6 @@ class Search extends Component {
 			}
 		});
 		return results;
-	}
-
-	fetchCover(id, i) {
-		let cover;
-
-		const requestedWith = axios.defaults.headers.common['X-Requested-With'];
-		const authorization = axios.defaults.headers.common['Authorization'];
-		delete axios.defaults.headers.common['X-Requested-With'];
-		delete axios.defaults.headers.common['Authorization'];
-
-		axios.get('http://coverartarchive.org/release/' + id)
-			.then((response) => {
-				const images = response.data.images;
-				images.some((img) => {
-					if(img.approved && img.front) {
-						cover = img.thumbnails.small;
-						return true;
-					}
-				});
-				if(cover === undefined) cover = images[0].thumbnails.small;
-				this.setState({
-					result: update(this.state.result, { [i]: { cover: { $set: cover } } })
-				});
-			})
-			.catch(() => {
-				const cover = 'https://via.placeholder.com/150x150?text=No+Cover';
-				this.setState({
-					result: update(this.state.result, { [i]: { cover: { $set: cover } } })
-				});
-			});
-
-		axios.defaults.headers.common['X-Requested-With'] = requestedWith;
-		axios.defaults.headers.common['Authorization'] = authorization;
 	}
 
 	renderResult(result) {
@@ -225,14 +178,14 @@ class Search extends Component {
 							onClick={this.openLyricModal}
 						>
 							<Grid container spacing={0}>
-								<Grid item xs={12} sm={5}>
+								<Grid item xs={4} sm={5}>
 									<CardMedia
 										className={classes.image}
-										image={item.cover}
+										image={item.cover + '"), url("/img/cover-generic.svg'}
 										title={item.title}
 									/>
 								</Grid>
-								<Grid item xs={12} sm={7}>
+								<Grid item xs={8} sm={7}>
 									<CardContent>
 										<Typography gutterBottom variant="h5">
 											{item.recording.title}&nbsp;
