@@ -160,7 +160,6 @@ class Contribute extends Component {
 										<CardMedia
 											className={classes.image}
 											image={item.cover + '"), url("/img/cover-generic.svg'}
-											title={item.title}
 										/>
 									</Grid>
 									<Grid item xs={12}>
@@ -199,6 +198,8 @@ class Contribute extends Component {
 								label="Lyric"
 								name="lyric"
 								multiline
+								rows={15}
+								rowsMax={200}
 								variant="outlined"
 								className={classes.textArea}
 								onChange={this.handleChange}
