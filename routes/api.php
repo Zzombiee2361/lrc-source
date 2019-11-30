@@ -23,6 +23,7 @@ Route::group(['middleware' => ['auth:api', 'scopes:contribute']], function() {
 });
 
 Route::group(['middleware' => ['auth:api', 'scopes:approve']], function() {
+	Route::get('need_review', 'HomeController@getNeedReview');
 	Route::post('approve', 'LyricController@approve');
 	Route::post('reject', 'LyricController@reject');
 });

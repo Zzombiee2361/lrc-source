@@ -32,7 +32,7 @@ class Auth {
 		const userData = {
 			email: data.user.email,
 			name: data.user.name,
-			role: data.user.role,
+			role: data.user.role_id,
 		};
 		if(mutate) {
 			this.parent.state.user = userData

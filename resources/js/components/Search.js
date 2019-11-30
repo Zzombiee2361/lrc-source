@@ -11,6 +11,7 @@ import CardActionArea from '@material-ui/core/CardActionArea';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Typography from '@material-ui/core/Typography';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 import Contribute from './Contribute';
 
@@ -244,7 +245,9 @@ class Search extends Component {
 	render() {
 		const resultList = (this.state.searched
 			? this.renderResult(this.state.result)
-			: (<Typography variant="h6" color="textSecondary">Searching...</Typography>));
+			: (<Typography variant="h6" color="textSecondary">
+					<CircularProgress size={18} /> Searching...
+				</Typography>));
 
 		if(this.state.searched === false) {
 			this.search();
