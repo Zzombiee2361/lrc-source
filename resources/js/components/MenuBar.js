@@ -69,14 +69,14 @@ class MenuBar extends Component {
 			'recording:'+this.state.searchTitle,
 			'artist:'+this.state.searchArtist
 		];
-		this.props.history.push('/search?query='+data.join(' AND '));
+		this.props.history.push('/search?query='+data.join(' AND ')+'&dismax=true');
 		if(this.state.searchModal) this.handleClose();
 	}
 
 	handleOpen() {
 		this.setState({ searchModal: true });
 	}
-	
+
 	handleClose() {
 		this.setState({ searchModal: false });
 	}
@@ -137,7 +137,7 @@ class MenuBar extends Component {
 							onClick={this.handleOpen}
 						>
 							<SearchIcon />
-						</IconButton> 
+						</IconButton>
 						<Dialog open={this.state.searchModal} onClose={this.handleClose} aria-labelledby="search-dialog-title">
 							<DialogTitle id="search-dialog-title">Search</DialogTitle>
 							<DialogContent>

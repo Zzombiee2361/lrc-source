@@ -117,7 +117,7 @@ class Search extends Component {
 				}
 			});
 
-			if(qualified.length > 0) {			
+			if(qualified.length > 0) {
 				const bestRelease = qualified.reduce((prev, current) => {
 					if(earliest && earliest.id === current.id) current.score += 1;
 					if(!prev) prev = { score: -1 };
@@ -183,7 +183,6 @@ class Search extends Component {
 									<CardMedia
 										className={classes.image}
 										image={item.cover + '"), url("/img/cover-generic.svg'}
-										title={item.title}
 									/>
 								</Grid>
 								<Grid item xs={8} sm={7}>
@@ -229,7 +228,7 @@ class Search extends Component {
 			lyricOpen: false,
 		});
 	}
-	
+
 	// Debugging info
 	// componentDidUpdate(prevProps, prevState) {
 	// 	Object.entries(this.props).forEach(([key, val]) =>
