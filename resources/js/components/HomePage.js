@@ -35,7 +35,7 @@ class NeedReview extends Component {
 						return (
 							<Grid item key={i} xs={12} md={6} lg={4}>
 								<MediaCard
-									mbid={item.id} 
+									mbid={item.id_album} 
 									id={i}
 									title={item.name}
 									artist={item.artist}

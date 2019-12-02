@@ -53,6 +53,7 @@ class Contribute extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
+			submitting: false,
 			open: props.lyricOpen,
 			lyric: ''
 		};
@@ -70,6 +71,8 @@ class Contribute extends Component {
 
 	handleSubmit() {
 		const { item } = this.props;
+		this.setState({ submitting: true });
+		this.props.notify.show('Uploading lyric...');
 		axios.post('/api/contribute', {
 			id_song: item.recording.id,
 			id_album: item.id,
@@ -82,6 +85,9 @@ class Contribute extends Component {
 			.catch((error) => {
 				console.log(error);
 				this.props.notify.show('Failed to upload lyric');
+			})
+			.finally(() => {
+				this.setState({ submitting: false });
 			})
 	}
 
@@ -135,7 +141,13 @@ class Contribute extends Component {
 			<Dialog fullScreen open={this.props.lyricOpen} onClose={this.props.handleClose} TransitionComponent={Transition}>
 				<AppBar className={classes.appBar}>
 					<Toolbar>
-						<IconButton edge="start" color="inherit" onClick={this.props.handleClose} aria-label="close">
+						<IconButton
+							edge="start"
+							color="inherit"
+							onClick={this.props.handleClose}
+							aria-label="close"
+							disabled={this.state.submitting}
+						>
 							<CloseIcon />
 						</IconButton>
 						<Typography variant="h6" className={classes.title}>
@@ -145,6 +157,7 @@ class Contribute extends Component {
 							autoFocus
 							color="secondary"
 							variant="contained"
+							disabled={this.state.submitting}
 							onClick={this.handleSubmit}
 						>
 							submit

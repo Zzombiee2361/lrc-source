@@ -53,7 +53,7 @@ class LyricController extends Controller {
 
 		// get album data
 		$release = array_search($id_album, array_column($recording['releases'], 'id'));
-		if(!$release) {
+		if($release === false) {
 			return response()->json([
 				'message' => 'Invalid album'
 			], 422);
