@@ -37,6 +37,7 @@ class MediaCard extends Component {
 				<CardActionArea
 					data-index={this.props.id}
 					onClick={this.props.onClick}
+					{...this.props.actionProps}
 				>
 					<Grid container spacing={0}>
 						<Grid item xs={4} sm={5}>
@@ -70,7 +71,8 @@ class MediaCard extends Component {
 }
 
 MediaCard.defaultProps = {
-	id: 0
+	id: 0,
+	actionProps: {},
 };
 
 MediaCard.propTypes = {
@@ -81,6 +83,7 @@ MediaCard.propTypes = {
 	artist: PropTypes.string.isRequired,
 	album: PropTypes.string.isRequired,
 	onClick: PropTypes.func,
+	actionProps: PropTypes.object,
 };
 
 export default MediaCard;

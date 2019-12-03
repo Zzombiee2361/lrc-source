@@ -35,4 +35,17 @@ class HomeController extends Controller
 			'data' => $data
 		]);
 	}
+
+	public function getRecent() {
+		$recents = DB::table('lyrics')
+			->join('songs', 'lyrics.id', '=', 'songs.id')
+			->orderBy('lyrics.updated_at', 'desc')
+			->limit(10)
+			->get();
+		
+		return response()->json([
+			'message' => 'success',
+			'data' => $recents,
+		]);
+	}
 }
