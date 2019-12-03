@@ -17,22 +17,34 @@ class Notify {
 	}
 
 	show(msg, cfg = {}) {
-		this.parent.setState({
-			notify: update(this.parent.state.notify, {
-				$merge: {
-					open: true,
-					message: msg,
-					duration: (cfg.duration || this.defaultCfg.duration),
-					action: (cfg.action || this.defaultCfg.action)
-				}
-			})
-		});
+		const open = () => {
+			this.parent.setState({
+				notify: update(this.parent.state.notify, {
+					$merge: {
+						open: true,
+						message: msg,
+						duration: (cfg.duration || this.defaultCfg.duration),
+						action: (cfg.action || this.defaultCfg.action)
+					}
+				})
+			});
+		}
+
+		if(this.parent.state.notify.open) {
+			this.close(() => setTimeout(open, 300))
+		} else {
+			open();
+		}
 	}
 
-	close() {
+	close(callback, reason) {
+		if(reason === 'clickaway') return;
+		if(typeof callback !== 'function') {
+			callback = undefined;
+		}
 		this.parent.setState({
 			notify: this.defaultCfg
-		});
+		}, callback);
 	}
 }
 
