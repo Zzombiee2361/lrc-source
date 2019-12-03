@@ -137,6 +137,7 @@ class LyricController extends Controller {
 
 			// approve selected history
 			$history->approved_by = $user->id;
+			$history->approved_at = now();
 			$history->save();
 			$id_song = $history->id_song;
 			$newest_revision = $history->revision;
@@ -156,6 +157,7 @@ class LyricController extends Controller {
 			foreach ($not_approved as $item) {
 				$currentLyric = $item->lyric;
 				$item->approved_by = $user->id;
+				$history->approved_at = now();
 				$opcode = (string) $this->getOpcodes($prevLyric, $currentLyric);
 				$item->lyric = $opcode;
 				$item->save();

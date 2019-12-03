@@ -8,9 +8,6 @@ class Lyric extends Model
 {
 	protected $keyType = 'string';
 	public $incrementing = false;
-    public $timestamps = false;
-
-    protected $guarded = ['created_at'];
 
     public function song() {
     	return $this->belongsTo('App\Song', 'id');

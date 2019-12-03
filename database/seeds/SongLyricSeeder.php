@@ -28,6 +28,7 @@ class SongLyricSeeder extends Seeder
 			$GLOBALS['revision'] = 1;
 			$revision_count = rand(1, $MAX_REVISION);
 			$accepted = rand(1, $MAX_REVISION);
+			if($accepted > $revision_count) $accepted = $revision_count;
 			$lyric = $song->lyric;
 
 			if($accepted > 1) {
@@ -47,7 +48,11 @@ class SongLyricSeeder extends Seeder
 
 			if($accepted < $revision_count) {
 				$song->histories()->saveMany(
-					factory(App\LyricHistory::class, $revision_count - $accepted)->make(['id_song' => $lyric->id, 'approved_by' => null])
+					factory(App\LyricHistory::class, $revision_count - $accepted)->make([
+						'id_song' => $lyric->id,
+						'approved_by' => null,
+						'approved_at' => null
+					])
 				);
 			}
         });

@@ -29,7 +29,7 @@ class CreateRelationships extends Migration
         Schema::table('rejected_lyrics', function (Blueprint $table) {
         	$table->foreign('id_history')->references('id')->on('lyric_history');
         	$table->foreign('contributed_by')->references('id')->on('users');
-        	$table->foreign('approved_by')->references('id')->on('users');
+        	$table->foreign('rejected_by')->references('id')->on('users');
         });
     }
 
@@ -56,7 +56,7 @@ class CreateRelationships extends Migration
         Schema::table('rejected_lyrics', function (Blueprint $table) {
             $table->dropForeign(['id_history']);
             $table->dropForeign(['contributed_by']);
-            $table->dropForeign(['approved_by']);
+            $table->dropForeign(['rejected_by']);
         });
     }
 }

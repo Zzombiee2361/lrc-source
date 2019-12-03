@@ -24,6 +24,7 @@ $factory->define(LyricHistory::class, function (Faker $faker) {
         'revision' => $GLOBALS['revision']++,
         'contributed_by' => $user->random()->id,
         'approved_by' => $reviewer->random()->id,
-        'lyric' => $faker->text
+        'lyric' => $faker->text,
+        'approved_at' => now()
     ];
 });
