@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import update from 'immutability-helper';
 // import PropTypes from 'prop-types';
 // import axios from 'axios';
 
@@ -9,7 +10,8 @@ import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
-import StepLabel from '@material-ui/core/StepLabel';
+import StepButton from '@material-ui/core/StepButton';
+// import StepLabel from '@material-ui/core/StepLabel';
 import StepContent from '@material-ui/core/StepContent';
 import Button from '@material-ui/core/Button';
 
@@ -19,10 +21,11 @@ class RevisionViewer extends Component {
 		this.state = {
 			steps: this.getSteps(),
       stepContent: [],
+      finishedStep: [],
       activeStep: 0,
     };
 
-    ['handleNext', 'handleBack', 'handleReset'].forEach((method) => {
+    ['handleReset'].forEach((method) => {
       this[method] = this[method].bind(this);
     });
 	}
@@ -49,12 +52,14 @@ class RevisionViewer extends Component {
 		}
   }
 
-  handleNext() {
-    this.setState({ activeStep: this.state.activeStep + 1 });
+  handleStep(step) {
+    this.setState({ activeStep: step });
   }
 
-  handleBack() {
-    this.setState({ activeStep: this.state.activeStep - 1 });
+  handleComplete(step) {
+    this.setState({ finishedStep: update(this.state.finishedStep, {
+      [step]: { $set: true }
+    }) });
   }
 
   handleReset() {
@@ -67,27 +72,26 @@ class RevisionViewer extends Component {
 				<Grid container spacing={3}>
 					<Grid item sm={12} md={4}>
 						<Paper>
-              <Stepper activeStep={this.state.activeStep} orientation="vertical">
+              <Stepper activeStep={this.state.activeStep} orientation="vertical" nonLinear>
                 {this.state.steps.map((label, index) => (
                   <Step key={label}>
-                    <StepLabel>{label}</StepLabel>
+                    <StepButton
+                      onClick={() => this.handleStep(index)}
+                      completed={this.state.finishedStep[index] === true}
+                    >{label}</StepButton>
                     <StepContent>
                       <Typography>{this.getStepContent(index)}</Typography>
                       <div>
                         <div>
-                          <Button
-                            disabled={this.state.activeStep === 0}
-                            onClick={this.handleBack}
-                          >
-                            Back
-                          </Button>
-                          <Button
-                            variant="contained"
-                            color="primary"
-                            onClick={this.handleNext}
-                          >
-                            {this.state.activeStep === this.state.steps.length - 1 ? 'Finish' : 'Next'}
-                          </Button>
+                          {this.state.finishedStep[index] !== true && (
+                            <Button
+                              variant="contained"
+                              color="primary"
+                              onClick={() => this.handleComplete(index)}
+                            >
+                              Complete
+                            </Button>
+                          )}
                         </div>
                       </div>
                     </StepContent>
