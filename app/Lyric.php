@@ -7,7 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class Lyric extends Model
 {
 	protected $keyType = 'string';
-	public $incrementing = false;
+    public $incrementing = false;
+
+    protected $guarded = ['created_at', 'updated_at'];
 
     public function song() {
     	return $this->belongsTo('App\Song', 'id');

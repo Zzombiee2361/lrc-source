@@ -157,7 +157,7 @@ class LyricController extends Controller {
 			foreach ($not_approved as $item) {
 				$currentLyric = $item->lyric;
 				$item->approved_by = $user->id;
-				$history->approved_at = now();
+				$item->approved_at = now();
 				$opcode = (string) $this->getOpcodes($prevLyric, $currentLyric);
 				$item->lyric = $opcode;
 				$item->save();
@@ -205,25 +205,40 @@ class LyricController extends Controller {
 
 	public function getRevision(Request $request) {
 		$request->validate([
-			'id_song' => 'required|uuid',
-			'revision' => 'required|int',
-			'approve_only' => 'string',
+			'id_song'		=> 'required|uuid',
+			'revision'		=> 'int',
+			'from' 			=> 'int',
+			'to' 			=> 'int',
+			'approve_only'	=> 'in:true,false',
+			'html'			=> 'in:true,false',
 		]);
 
 		$id_song = $request->input('id_song');
 		$revision = $request->input('revision');
+		if($revision === null) {
+			$revFrom = $request->input('from', 1);
+			$revTo = $request->input('to');
+		}
 		$approve_only = $request->input('approve_only', 'true');
 		$approve_only = ($approve_only === 'true' ? true : false);
+		$html = $request->input('html', 'false');
+		$html = ($html === 'true' ? true : false);
 
-		$histories = LyricHistory::where([
-			['id_song', '=', $id_song],
-			['revision', '>=', $revision]
-		])
-		->orderBy('revision', 'desc');
+		$histories = LyricHistory::where('id_song', '=', $id_song);
+		if($revision === null) {
+			$histories->where('revision', '>=', $revFrom);
+			if($revTo !== null) {
+				$histories->where('revision', '<=', $revTo);
+			}
+		} else {
+			$histories->where('revision', '>=', $revision);
+		}
 
 		if($approve_only) {
 			$histories->whereNotNull('approved_by');
 		}
+
+		$histories->orderBy('revision', 'desc');
 		$histories = $histories->get();
 
 		if($histories->isEmpty()) {
@@ -232,7 +247,11 @@ class LyricController extends Controller {
 			], 404);
 		}
 
-		$render = new FineDiff\Render\Text;
+		if($html) {
+			$render = new FineDiff\Render\Html;
+		} else {
+			$render = new FineDiff\Render\Text;
+		}
 		$lastLyric = '';
 		$lastHistory = null;
 		foreach ($histories as $history) {
@@ -242,12 +261,14 @@ class LyricController extends Controller {
 				$lastLyric = $render->process($lastLyric, $history->lyric);
 			}
 			$lastHistory = $history;
+			$history->lyric = $lastLyric;
 		}
 		$lastHistory->lyric = $lastLyric;
+		$data = ($revision === null ? $histories : $lastHistory);
 
 		return response()->json([
 			'message' => 'Success',
-			'data' => $lastHistory,
+			'data' => $data,
 		]);
 	}
 
@@ -307,7 +328,7 @@ class LyricController extends Controller {
 		$mode = $request->input('mode');
 		$string1 = $request->input('string1');
 		$string2 = $request->input('string2');
-		
+
 		$result = [];
 		if($mode === 'get opcode') {
 			$result['opcode'] = (string) $this->getOpcodes($string1, $string2);
