@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 */
 
 Route::get('search', 'MusicBrainzController@search');
+Route::get('get_song_or_lyric', 'LyricController@getSongOrLyric');
 Route::get('get_revision', 'LyricController@getRevision');
 Route::get('get_recent', 'HomeController@getRecent');
 

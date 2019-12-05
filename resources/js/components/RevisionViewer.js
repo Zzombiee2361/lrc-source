@@ -7,16 +7,22 @@ import  { withStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepButton from '@material-ui/core/StepButton';
 import StepContent from '@material-ui/core/StepContent';
 
+import MediaCard from "./MediaCard";
+
 const useStyles = theme => ({
 	paperPadding: {
 		padding: theme.spacing(5),
-	}
+	},
+	revisionStepper: {
+		marginTop: theme.spacing(3),
+	},
 });
 
 class RevisionViewer extends Component {
@@ -24,6 +30,7 @@ class RevisionViewer extends Component {
 		super(props);
 		this.state = {
 			histories: [],
+			song: null,
 			activeStep: 0,
 		};
 	}
@@ -41,10 +48,25 @@ class RevisionViewer extends Component {
 				this.setState({ histories: response.data.data });
 			}
 		});
+
+		axios.get('/api/get_song_or_lyric?get=song&id_song=' + id_song)
+		.then((response) => {
+			if(response.data.message === 'success') {
+				this.setState({ song: response.data.data });
+			}
+		});
 	}
 
 	handleStep(step) {
 		this.setState({ activeStep: step });
+	}
+
+	handleApprove(id) {
+
+	}
+
+	handleReject(id) {
+
 	}
 
 	render() {
@@ -55,7 +77,18 @@ class RevisionViewer extends Component {
 				<Grid container spacing={3}>
 
 					<Grid item sm={12} md={4}>
-						<Paper>
+
+						{this.state.song !== null && (
+							<MediaCard
+								mbid={this.state.song.id_album}
+								title={this.state.song.name}
+								artist={this.state.song.artist}
+								album={this.state.song.album}
+								actionProps={{ disabled: true }}
+							/>
+						)}
+
+						<Paper className={classes.revisionStepper}>
 							<Stepper activeStep={this.state.activeStep} orientation="vertical" nonLinear>
 
 								{this.state.histories.map((history, index) => (
@@ -64,6 +97,7 @@ class RevisionViewer extends Component {
 										<StepButton
 											onClick={() => this.handleStep(index)}
 											icon={history.revision}
+											completed={history.approved_by !== null && history.approved_at !== null}
 										>
 											<Typography align='left' variant='h6'>
 												{history.contributor_name}<br />
@@ -75,13 +109,22 @@ class RevisionViewer extends Component {
 
 										<StepContent>
 											<Typography component="div">
-												<Grid container>
+												<Grid container spacing={2}>
 													{(
 														history.approved_by === null || history.approved_at === null
 														? (
 															<React.Fragment>
-																<Grid item xs={6}>Not yet approved</Grid>
-																<Grid item xs={6}></Grid>
+																<Grid item xs={12}>Not yet approved</Grid>
+																{this.props.user.role >= 3 && (
+																	<React.Fragment>
+																		<Grid item xs={6}>
+																			<Button variant="contained" color="primary" onClick={() => this.handleApprove(history.id)}>Approve</Button>
+																		</Grid>
+																		<Grid item xs={6}>
+																			<Button variant="contained" color="secondary" onClick={() => this.handleReject(history.id)}>Reject</Button>
+																		</Grid>
+																	</React.Fragment>
+																)}
 															</React.Fragment>
 														) : (
 															<React.Fragment>
@@ -120,6 +163,7 @@ class RevisionViewer extends Component {
 RevisionViewer.propTypes = {
 	classes: PropTypes.object,
 	match: PropTypes.object,
+	user: PropTypes.object,
 }
 
 export default withStyles(useStyles)(RevisionViewer);

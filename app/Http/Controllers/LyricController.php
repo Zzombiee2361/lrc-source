@@ -203,6 +203,92 @@ class LyricController extends Controller {
 		}
 	}
 
+	public function reject(Request $request) {
+		$user = Auth::user();
+		$request->validate([
+			'id' => 'required|int'
+		]);
+
+		$rejected = LyricHistory::find($request->input('id'));
+		if(!$rejected) {
+			return response()->json([
+				'message' => 'No lyric found'
+			], 404);
+		}
+
+		$id_song = $rejected->id_song;
+		$revision = $rejected->revision;
+
+		$rejected = LyricHistory::where([
+			'id_song' => $id_song,
+			['revision', '>=', $revision]
+		])->orderBy('revision')->get();
+
+		$lyric = LyricHistory::where('id_song', $id_song)
+			->whereNotNull('approved_by')
+			->orderBy('revision', 'desc')
+			->first();
+
+		DB::beginTransaction();
+		try {
+			foreach ($rejected as $item) {
+				$reject = new RejectedLyric;
+				$reject->id_history = $lyric->id;
+				$reject->contributed_by = $item->contributed_by;
+				$reject->rejected_by = $user->id;
+				$reject->lyric = $this->getOpcodes($lyric->lyric, $item->lyric);
+				$reject->save();
+				$item->delete();
+			}
+
+			DB::commit();
+			return response()->json([
+				'message' => 'Lyric rejected',
+			]);
+		} catch (\Throwable $exc) {
+			$code = intval($exc->getCode());
+			$code = !!$code ? $code : 500;
+			DB::rollBack();
+			return response()->json([
+				'message' => $exc->getMessage()
+			], $code);
+		}
+	}
+
+	public function getSongOrLyric(Request $request) {
+		$request->validate([
+			'id_song'	=> 'required|uuid',
+			'get'		=> 'in:song,lyric,both',
+		]);
+
+		$id_song = $request->input('id_song');
+		$get = $request->input('get', 'both');
+
+		switch ($get) {
+			case 'both':
+				$result = Song::with('lyric')->find($id_song);
+				break;
+			
+			case 'song':
+				$result = Song::find($id_song);
+				break;
+			
+			case 'lyric':
+				$result = Lyric::find($id_song);
+				break;
+		}
+
+		if($result === null) {
+			return response()->json([
+				'message' => 'Not Found'
+			], 404);
+		}
+		return response()->json([
+			'message' => 'success',
+			'data' => $result,
+		]);
+	}
+
 	public function getRevision(Request $request) {
 		$request->validate([
 			'id_song'		=> 'required|uuid',
@@ -284,58 +370,6 @@ class LyricController extends Controller {
 			'message' => 'success',
 			'data' => $data,
 		]);
-	}
-
-	public function reject(Request $request) {
-		$user = Auth::user();
-		$request->validate([
-			'id' => 'required|int'
-		]);
-
-		$rejected = LyricHistory::find($request->input('id'));
-		if(!$rejected) {
-			return response()->json([
-				'message' => 'No lyric found'
-			], 404);
-		}
-
-		$id_song = $rejected->id_song;
-		$revision = $rejected->revision;
-
-		$rejected = LyricHistory::where([
-			'id_song' => $id_song,
-			['revision', '>=', $revision]
-		])->orderBy('revision')->get();
-
-		$lyric = LyricHistory::where('id_song', $id_song)
-			->whereNotNull('approved_by')
-			->orderBy('revision', 'desc')
-			->first();
-
-		DB::beginTransaction();
-		try {
-			foreach ($rejected as $item) {
-				$reject = new RejectedLyric;
-				$reject->id_history = $lyric->id;
-				$reject->contributed_by = $item->contributed_by;
-				$reject->rejected_by = $user->id;
-				$reject->lyric = $this->getOpcodes($lyric->lyric, $item->lyric);
-				$reject->save();
-				$item->delete();
-			}
-
-			DB::commit();
-			return response()->json([
-				'message' => 'Lyric rejected',
-			]);
-		} catch (\Throwable $exc) {
-			$code = intval($exc->getCode());
-			$code = !!$code ? $code : 500;
-			DB::rollBack();
-			return response()->json([
-				'message' => $exc->getMessage()
-			], $code);
-		}
 	}
 
 	public function testFunc(Request $request) {
