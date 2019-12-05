@@ -224,7 +224,21 @@ class LyricController extends Controller {
 		$html = $request->input('html', 'false');
 		$html = ($html === 'true' ? true : false);
 
-		$histories = LyricHistory::where('id_song', '=', $id_song);
+		$histories = DB::table('lyric_history')
+			->select([
+				'lyric_history.*',
+				'contributor.name as contributor_name',
+				'approver.name as approver_name'
+			])
+			->leftJoin(
+				'users as contributor',
+				'contributor.id', '=', 'lyric_history.contributed_by'
+			)
+			->leftJoin(
+				'users as approver',
+				'approver.id', '=', 'lyric_history.approved_by'
+			)
+			->where('id_song', '=', $id_song);
 		if($revision === null) {
 			$histories->where('revision', '>=', $revFrom);
 			if($revTo !== null) {
@@ -267,7 +281,7 @@ class LyricController extends Controller {
 		$data = ($revision === null ? $histories : $lastHistory);
 
 		return response()->json([
-			'message' => 'Success',
+			'message' => 'success',
 			'data' => $data,
 		]);
 	}

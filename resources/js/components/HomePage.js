@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-// import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 import  { makeStyles } from '@material-ui/core/styles';
@@ -18,7 +18,7 @@ const useStyles = makeStyles({
 
 function NeedReview(props) {
 	const classes = useStyles();
-	
+
 	if(props.items.length > 0) {
 		return (
 			<div>
@@ -28,16 +28,16 @@ function NeedReview(props) {
 						return (
 							<Grid item key={i} xs={12} md={6} lg={4}>
 								<MediaCard
-									mbid={item.id_album} 
+									mbid={item.id_album}
 									id={i}
 									title={item.name}
 									artist={item.artist}
 									album={item.album}
 									// TODO: make revision page and redirect to it
-									// actionProps={{
-									// 	component: Link,
-									// 	to: '/test'
-									// }}
+									actionProps={{
+										component: Link,
+										to: '/revision/' + item.id
+									}}
 								/>
 							</Grid>
 						)
@@ -61,7 +61,7 @@ function RecentLyrics(props) {
 					return (
 						<Grid item key={i} xs={12} md={6} lg={4}>
 							<MediaCard
-								mbid={item.id_album} 
+								mbid={item.id_album}
 								id={i}
 								title={item.name}
 								artist={item.artist}
@@ -106,7 +106,7 @@ class HomePage extends Component {
 			})
 		});
 	}
-	
+
 	render() {
 		return (
 			<Container>

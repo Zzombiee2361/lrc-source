@@ -75,7 +75,7 @@ export default class App extends Component {
 					<Switch>
 						<Route exact path="/" render={(props) => <HomePage {...props} user={this.state.user} />} />
 						<Route path="/search" render={(props) => <Search {...props} notify={this.notify} user={this.state.user} />} />
-						<Route path="/revision" render={(props) => <RevisionViewer {...props} />} />
+						<Route path="/revision/:id_song" render={(props) => <RevisionViewer {...props} />} />
 						<Route path="/login" render={(props) => <Login {...props} authenticate={this.auth.authenticate} notify={this.notify} />} />
 						<Route path="/register" render={(props) => <Register {...props} notify={this.notify} />} />
 						<Route path="/logout" render={(props) => <Logout {...props} logout={this.auth.logout} />} />
