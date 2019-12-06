@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-// import update from 'immutability-helper';
+import update from 'immutability-helper';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 
@@ -33,9 +33,15 @@ class RevisionViewer extends Component {
 			song: null,
 			activeStep: 0,
 		};
+
+		this.fetchRevision = this.fetchRevision.bind(this);
 	}
 
 	componentDidMount() {
+		this.fetchRevision();
+	}
+
+	fetchRevision() {
 		const { id_song } = this.props.match.params;
 		axios.get('/api/get_revision', {
 			params: {
@@ -62,11 +68,39 @@ class RevisionViewer extends Component {
 	}
 
 	handleApprove(id) {
-
+		axios({
+			url: '/api/approve',
+			method: 'post',
+			data: {
+				id: id
+			}
+		})
+		.then((response) => {
+			this.props.notify.show(response.data.message);
+			this.fetchRevision();
+		})
+		.catch((response) => {
+			console.log(response);
+			this.props.notify.show(response.data.message);
+		});
 	}
 
 	handleReject(id) {
-
+		axios({
+			url: '/api/reject',
+			method: 'post',
+			data: {
+				id: id
+			}
+		})
+		.then((response) => {
+			this.props.notify.show(response.data.message);
+			this.fetchRevision();
+		})
+		.catch((response) => {
+			console.log(response);
+			this.props.notify.show(response.data.message);
+		});
 	}
 
 	render() {
@@ -164,6 +198,7 @@ RevisionViewer.propTypes = {
 	classes: PropTypes.object,
 	match: PropTypes.object,
 	user: PropTypes.object,
+	notify: PropTypes.object,
 }
 
 export default withStyles(useStyles)(RevisionViewer);
