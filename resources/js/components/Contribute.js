@@ -80,6 +80,7 @@ class Contribute extends Component {
 		})
 			.then((response) => {
 				this.props.notify.show(response.data.message);
+				this.setState({ lyric: '' });
 				this.props.handleClose();
 			})
 			.catch((error) => {
