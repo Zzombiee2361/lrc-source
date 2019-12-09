@@ -33,7 +33,6 @@ function NeedReview(props) {
 									title={item.name}
 									artist={item.artist}
 									album={item.album}
-									// TODO: make revision page and redirect to it
 									actionProps={{
 										component: Link,
 										to: '/revision/' + item.id
@@ -66,7 +65,10 @@ function RecentLyrics(props) {
 								title={item.name}
 								artist={item.artist}
 								album={item.album}
-								// TODO: make view lyric page and redirect to it
+								actionProps={{
+									component: Link,
+									to: '/lyric/' + item.id
+								}}
 							/>
 						</Grid>
 					)

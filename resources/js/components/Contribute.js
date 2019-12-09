@@ -96,6 +96,10 @@ class Contribute extends Component {
 		const el = event.currentTarget;
 		const file = el.files[0];
 		if(file) {
+			if(file.size > 500000) {
+				this.props.notify.show('Your file exceeded 500 kB size limit');
+				return;
+			}
 			const reader = new FileReader();
 			reader.readAsText(file, "UTF-8");
 			reader.onload = (evt) => {
