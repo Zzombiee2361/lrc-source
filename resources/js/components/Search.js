@@ -14,6 +14,7 @@ import Typography from '@material-ui/core/Typography';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 import Contribute from './Contribute';
+import Notify from './Notify';
 
 const useStyles = {
 	image: {
@@ -43,6 +44,10 @@ class Search extends Component {
 		this.renderResult = this.renderResult.bind(this);
 		this.openLyricModal = this.openLyricModal.bind(this);
 		this.closeLyricModal = this.closeLyricModal.bind(this);
+	}
+
+	componentDidMount() {
+		this.notify = this.context;
 	}
 
 	search() {
@@ -209,7 +214,7 @@ class Search extends Component {
 
 	openLyricModal(event) {
 		if(this.props.user.email === '' && this.props.user.name === '') {
-			this.props.notify.show('Please login to contribute lyrics');
+			this.notify.show('Please login to contribute lyrics');
 			return;
 		}
 		const el = event.currentTarget;
@@ -270,7 +275,6 @@ class Search extends Component {
 					lyricOpen={this.state.lyricOpen}
 					item={selectedItem}
 					handleClose={this.closeLyricModal}
-					notify={this.props.notify}
 				/>
 			</React.Fragment>
 		)
@@ -284,5 +288,7 @@ Search.propTypes = {
 	notify: PropTypes.object.isRequired,
 	user: PropTypes.object,
 }
+
+Search.contextType = Notify;
 
 export default withStyles(useStyles)(Search);

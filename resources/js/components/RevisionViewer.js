@@ -20,6 +20,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
 import MediaCard from "./MediaCard";
+import Notify from './Notify';
 
 const useStyles = theme => ({
 	paperPadding: {
@@ -48,6 +49,7 @@ class RevisionViewer extends Component {
 
 	componentDidMount() {
 		this.fetchRevision();
+		this.notify = this.context;
 	}
 
 	fetchRevision() {
@@ -86,13 +88,13 @@ class RevisionViewer extends Component {
 				}
 			})
 			.then((response) => {
-				this.props.notify.show(response.data.message);
+				this.notify.show(response.data.message);
 				this.fetchRevision();
 				this.setState({ dialogOpen: false });
 			})
 			.catch((response) => {
 				console.log(response);
-				this.props.notify.show(response.data.message);
+				this.notify.show(response.data.message);
 				this.setState({ dialogOpen: false });
 			});
 		}
@@ -239,5 +241,7 @@ RevisionViewer.propTypes = {
 	user: PropTypes.object,
 	notify: PropTypes.object,
 }
+
+RevisionViewer.contextType = Notify;
 
 export default withStyles(useStyles)(RevisionViewer);

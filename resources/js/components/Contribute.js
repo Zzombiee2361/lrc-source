@@ -21,6 +21,8 @@ import TextField from '@material-ui/core/TextField';
 import CloseIcon from '@material-ui/icons/Close';
 import DescriptionIcon from '@material-ui/icons/Description';
 
+import Notify from './Notify';
+
 const useStyles = theme => ({
 	appBar: {
 		position: 'relative',
@@ -63,6 +65,10 @@ class Contribute extends Component {
 		this.handleFile = this.handleFile.bind(this);
 	}
 
+	componentDidMount() {
+		this.notify = this.context;
+	}
+
 	handleChange(event) {
 		this.setState({
 			[event.target.name]: event.target.value
@@ -72,20 +78,20 @@ class Contribute extends Component {
 	handleSubmit() {
 		const { item } = this.props;
 		this.setState({ submitting: true });
-		this.props.notify.show('Uploading lyric...');
+		this.notify.show('Uploading lyric...');
 		axios.post('/api/contribute', {
 			id_song: item.recording.id,
 			id_album: item.id,
 			lyric: this.state.lyric
 		})
 			.then((response) => {
-				this.props.notify.show(response.data.message);
+				this.notify.show(response.data.message);
 				this.setState({ lyric: '' });
 				this.props.handleClose();
 			})
 			.catch((error) => {
 				console.log(error);
-				this.props.notify.show('Failed to upload lyric');
+				this.notify.show('Failed to upload lyric');
 			})
 			.finally(() => {
 				this.setState({ submitting: false });
@@ -97,7 +103,7 @@ class Contribute extends Component {
 		const file = el.files[0];
 		if(file) {
 			if(file.size > 500000) {
-				this.props.notify.show('Your file exceeded 500 kB size limit');
+				this.notify.show('Your file exceeded 500 kB size limit');
 				return;
 			}
 			const reader = new FileReader();
@@ -109,7 +115,7 @@ class Contribute extends Component {
 			};
 			reader.onerror = (evt) => {
 				console.log(evt);
-				this.props.notify.show('Error reading file');
+				this.notify.show('Error reading file');
 			};
 		}
 	}
@@ -238,5 +244,7 @@ Contribute.propTypes = {
 	handleClose: PropTypes.func.isRequired,
 	notify: PropTypes.object.isRequired,
 };
+
+Contribute.contextType = Notify;
 
 export default withStyles(useStyles)(Contribute);

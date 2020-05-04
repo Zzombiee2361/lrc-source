@@ -7,8 +7,10 @@ import  { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
 
 import MediaCard from './MediaCard';
+import Notify from './Notify';
 
 const useStyles = makeStyles({
 	sectionTitle: {
@@ -110,12 +112,19 @@ class HomePage extends Component {
 	}
 
 	render() {
+		let notify = this.context;
 		return (
-			<Container>
-				<Typography gutterBottom variant="h3">Welcome to LRC Source</Typography>
-				<NeedReview items={this.state.needReview} />
-				<RecentLyrics items={this.state.recents} />
-			</Container>
+			// <Notify>
+			// {({ showNotify }) => (
+				<Container>
+					<Typography gutterBottom variant="h3">Welcome to LRC Source</Typography>
+					{/* <Button variant="contained" color="primary" onClick={() => showNotify('test')}>Test</Button> */}
+					<Button variant="contained" color="primary" onClick={() => notify.show('test')}>Test</Button>
+					<NeedReview items={this.state.needReview} />
+					<RecentLyrics items={this.state.recents} />
+				</Container>
+			// )}
+			// </Notify>
 		);
 	}
 }
@@ -131,5 +140,7 @@ RecentLyrics.propTypes = {
 HomePage.propTypes = {
 	user: PropTypes.object
 };
+
+HomePage.contextType = Notify;
 
 export default HomePage;

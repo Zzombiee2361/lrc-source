@@ -15,6 +15,7 @@ import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import Notify from '../Notify';
 
 const useStyles = theme => ({
 	'@global': {
@@ -54,10 +55,12 @@ class Login extends Component {
 			}
 		}
 
-		this.notify = this.props.notify;
-
 		this.handleInputChange = this.handleInputChange.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
+	}
+
+	componentDidMount() {
+		this.notify = this.context;
 	}
 
 	handleInputChange(event) {
@@ -174,7 +177,8 @@ Login.propTypes = {
 	classes: PropTypes.object.isRequired,
 	history: PropTypes.object.isRequired,
 	authenticate: PropTypes.func,
-	notify: PropTypes.object
 }
+
+Login.contextType = Notify;
 
 export default withRouter(withStyles(useStyles)(Login));

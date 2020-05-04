@@ -17,6 +17,8 @@ import Container from '@material-ui/core/Container';
 
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 
+import Notify from '../Notify';
+
 const useStyles = theme => ({
 	'@global': {
 		body: {
@@ -55,10 +57,12 @@ class Register extends Component {
 			},
 		}
 
-		this.notify = this.props.notify;
-
 		this.handleInputChange = this.handleInputChange.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
+	}
+
+	componentDidMount() {
+		this.notify = this.context;
 	}
 
 	handleInputChange(event) {
@@ -203,5 +207,7 @@ Register.propTypes = {
 	history: PropTypes.object.isRequired,
 	notify: PropTypes.object,
 }
+
+Register.contextType = Notify;
 
 export default withRouter(withStyles(useStyles)(Register));

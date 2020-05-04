@@ -1,15 +1,29 @@
-import update from 'immutability-helper';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import Snackbar from '@material-ui/core/Snackbar';
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
 
-class Notify {
-	constructor(instance) {
-		this.parent = instance;
-		this.defaultCfg = {
+const NotifyContext = React.createContext();
+
+export class NotifyProvider extends Component {
+	constructor(props) {
+		super(props);
+		this.state = {
 			open: false,
 			message: '',
 			duration: 5000,
-			action: [],
+			action: [
+				<IconButton
+					key="close"
+					aria-label="close"
+					color="inherit"
+					onClick={() => this.close.call(this)}
+				>
+					<CloseIcon />
+				</IconButton>
+			],
 		};
-		this.parent.state.notify = this.defaultCfg;
 
 		['show', 'close'].forEach((method) => {
 			this[method] = this[method].bind(this);
@@ -18,19 +32,15 @@ class Notify {
 
 	show(msg, cfg = {}) {
 		const open = () => {
-			this.parent.setState({
-				notify: update(this.parent.state.notify, {
-					$merge: {
-						open: true,
-						message: msg,
-						duration: (cfg.duration || this.defaultCfg.duration),
-						action: (cfg.action || this.defaultCfg.action)
-					}
-				})
+			this.setState({
+				open: true,
+				message: msg,
+				duration: (cfg.duration || this.state.duration),
+				action: (cfg.action || this.state.action),
 			});
 		}
 
-		if(this.parent.state.notify.open) {
+		if(this.state.open) {
 			this.close(() => setTimeout(open, 300))
 		} else {
 			open();
@@ -42,10 +52,37 @@ class Notify {
 		if(typeof callback !== 'function') {
 			callback = undefined;
 		}
-		this.parent.setState({
-			notify: this.defaultCfg
-		}, callback);
+		this.setState({ open: false }, callback);
+	}
+
+	render() {
+		const { children } = this.props;
+		return (
+			<NotifyContext.Provider
+				value={{
+					show: this.show,
+					close: this.close,
+				}}
+			>
+				<Snackbar
+					anchorOrigin={{
+						vertical: 'bottom',
+						horizontal: 'center',
+					}}
+					open={this.state.open}
+					autoHideDuration={this.state.duration}
+					onClose={this.close}
+					message={this.state.message}
+					action={this.state.action}
+				/>
+				{children}
+			</NotifyContext.Provider>
+		);
 	}
 }
 
-export default Notify;
+NotifyProvider.propTypes = {
+	children: PropTypes.object
+}
+
+export default NotifyContext;
