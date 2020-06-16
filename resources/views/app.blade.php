@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Laravel</title>
+	<title>{{ env('APP_NAME') }}</title>
 </head>
 <body style="margin: 0; background-color: #eee;">
 	<div id="app"></div>
