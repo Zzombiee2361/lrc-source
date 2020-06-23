@@ -3,61 +3,45 @@ import axios from 'axios';
 class Auth {
 	constructor(instance) {
 		this.parent = instance;
-		this.auth = localStorage.getItem('auth');
-		if(this.auth === null) {
-			this.parent.state.user = {
-				email: '',
-				name: '',
-				role: null,
-			};
-		} else {
-			const data = JSON.parse(this.auth);
-			const exp = new Date(data.expires_at);
-			if(exp > new Date()) {
-				this._setData(data, true);
-			} else {
-				this._clearData(true);
-			}
-		}
 
-		['_setData', '_clearData', 'authenticate', 'logout'].forEach((method) => {
-			this[method] = this[method].bind(this);
-		})
-	}
-
-	_setData(data, mutate = false) {
-		localStorage.setItem('auth', JSON.stringify(data));
-		this.auth = data;
-		axios.defaults.headers.common['Authorization'] = data.token_type+' '+data.access_token;
-		const userData = {
-			email: data.user.email,
-			name: data.user.name,
-			role: data.user.role_id,
-		};
-		if(mutate) {
-			this.parent.state.user = userData
-		} else {
-			this.parent.setState({ user: userData });
-		}
-	}
-
-	_clearData(mutate = false) {
-		localStorage.removeItem('auth');
-		delete this.auth;
-		delete axios.defaults.headers.common['Authorization'];
-		const userData = {
+		this.parent.state.user = {
 			email: '',
 			name: '',
 			role: null
 		};
-		if(mutate) {
-			this.parent.state.user = userData
-		} else {
-			this.parent.setState({ user: userData });
-		}
+
+		axios.get('/api/auth/user')
+			.then((response) => { this._setData(response.data); })
+			.catch(() => { /* Unauthenticated */ });
+
+		['_setData', 'authenticate', 'logout'].forEach((method) => {
+			this[method] = this[method].bind(this);
+		})
 	}
 
-	authenticate(email, password) {
+	_setData(data) {
+		this.auth = data;
+		let userData
+		
+		if(typeof data === 'object' && data !== null) {
+			userData = {
+				email: data.user.email,
+				name: data.user.name,
+				role: data.user.role_id,
+			};
+		} else {
+			userData = {
+				email: '',
+				name: '',
+				role: null
+			};
+		}
+
+		this.parent.setState({ user: userData });
+	}
+
+	async authenticate(email, password) {
+		await axios.get('/sanctum/csrf-cookie');
 		const request = axios.post('/api/auth/login', {email: email, password: password});
 		request.then((response) => {
 			if(response.status === 200) {
@@ -73,10 +57,10 @@ class Auth {
 	logout() {
 		const request = axios.get('/api/auth/logout');
 		request.then(() => {
-			this._clearData();
+			this._setData(null);
 		}).catch((error) => {
 			if(error.response.status === 401) {
-				this._clearData();
+				this._setData(null);
 			}
 		});
 		return request;

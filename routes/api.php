@@ -21,11 +21,11 @@ Route::get('get_recent', 'HomeController@getRecent');
 
 Route::post('test', 'LyricController@testFunc');
 
-Route::group(['middleware' => ['auth:api', 'scopes:contribute']], function() {
+Route::group(['middleware' => ['auth:sanctum', 'can:contribute']], function() {
 	Route::post('contribute', 'LyricController@contribute');
 });
 
-Route::group(['middleware' => ['auth:api', 'scopes:approve']], function() {
+Route::group(['middleware' => ['auth:sanctum', 'can:approve']], function() {
 	Route::get('need_review', 'HomeController@getNeedReview');
 	Route::post('approve', 'LyricController@approve');
 	Route::post('reject', 'LyricController@reject');
@@ -37,7 +37,7 @@ Route::group([
 	Route::post('login', 'AuthController@login');
 	Route::post('register', 'AuthController@register');
 
-	Route::group(['middleware' => 'auth:api'], function () {
+	Route::group(['middleware' => 'auth:sanctum'], function () {
 		Route::get('logout', 'AuthController@logout');
 		Route::get('user', 'AuthController@user');
 	});

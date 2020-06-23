@@ -44,30 +44,15 @@ class AuthController extends Controller
 			], 401);
 		}
 
-		$user = Auth::user();
-
-		$scopes = [
-			[],
-			['contribute'],
-			['contribute', 'approve'],
-			['contribute', 'approve'],
-		];
-
-		$tokenResult = $user->createToken('Personal Access Token', $scopes[$user->role_id - 1]);
-
 		return response()->json([
-			'access_token' => $tokenResult->accessToken,
-			'token_type' => 'Bearer',
-			'expires_at' => now()->addDays(15)->toDateTimeString(),
-			'user' => $user
+			'message' => 'Login success',
+			'user' => Auth::user(),
 		]);
 	}
 
 	public function logout() {
-		$userTokens = Auth::user()->tokens;
-		foreach ($userTokens as $token) {
-			$token->revoke();
-		}
+		// workaround found on https://github.com/laravel/sanctum/issues/87
+		Auth::guard('web')->logout();
 
 		return response()->json([
 			'message' => 'Successfully logged out'
@@ -76,6 +61,9 @@ class AuthController extends Controller
 
 	public function user() {
 		$user = Auth::user();
-		return response()->json($user);
+		return response()->json([
+			'message' => 'success',
+			'user' => $user,
+		]);
 	}
 }
